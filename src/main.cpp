@@ -1,6 +1,6 @@
 #include <iostream>
 #include "../include/init.h"
-#include "../include/globals.h"
+//#include "../include/globals.h"
 //#include "../include/runs.h"
 using namespace std;
 
@@ -17,10 +17,10 @@ inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 
 int main_run(MultiNcReader &R){
 
-//	int dstep = nsteps/40+1;
+	int dstep = R.nsteps/40+1;
 
-//	printRunHeader("Main run", gday_t0, gday_t0 + (nsteps-1)*(dt/24.0), nsteps, dstep);
-//	cout << endl;
+	printRunHeader("Main run", R.gday_t0, R.gday_t0 + (R.nsteps-1)*(R.dt/24.0), R.nsteps, dstep);
+	cout << endl;
 
 	for (int istep = 0; istep < R.nsteps; ++istep){
 		

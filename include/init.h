@@ -57,7 +57,7 @@ class MultiNcReader{
 	
 	// simulation time
 	string sim_date0, sim_t0, sim_datef, sim_tf;
-	float dt, dt_spinbio;
+	float dt;
 	int sim_start_yr;
 	double gday_t0, gday_tf, gday_tb;
 	string tunits_out;
@@ -92,13 +92,14 @@ class MultiNcReader{
 
 	map <string, string> data_dirs;			// list of named dirs
 	map <string, ip_data> ip_data_map;		// ---
-//	map <string, bool> writeVar_flags;		// 
-//	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
 	map <string, string> static_var_files; 	// 
 	map <string, int> static_var_nlevs; 	// 
 	map <string, string> mask_var_files; 	// 
+//	map <string, bool> writeVar_flags;		// 
+//	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
 
 	vector <gVar*> model_variables;			// using a vector here allows control over order of variables
+	map<string, gVar*> all_vars_map;			// using a map here allows quick searching of variables by name 
 
 	public:
 	vector <gVar> vars;

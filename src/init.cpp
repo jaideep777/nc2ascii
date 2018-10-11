@@ -194,8 +194,9 @@ int MultiNcReader::init_modelvar(gVar &v, string var_name, string unit, int nl, 
 	
 	v.setRegriddingMethod("bilinear");
 
-	// add gVar to model variables list
+	// add gVar to model variables list and to all_vars map
 	model_variables.push_back(&v);
+	all_vars_map[var_name] = &v;
 
 }
 
@@ -248,7 +249,7 @@ int MultiNcReader::create_sim_config(){
 
 
 gVar& MultiNcReader::getVar(string s){
-	
+	return *all_vars_map[s];
 }
 
 ///*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
