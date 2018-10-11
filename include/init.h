@@ -32,36 +32,21 @@ public:
 	
 };
 
-//// READ PARAMS FILES
-//int read_ip_params_file();
-//int read_sim_config_file();
-//int read_veg_params_file();
-
-
-//int init_firenet();
-
-//double read_nc_input_files(int istep);
-
-//int write_ascii_output(double gt);
-//int write_nc_output(int islice);
-
-
-//int close_firenet();
-
 
 class MultiNcReader{
 	public:
 	
-	string params_dir;
 	string params_file;
+
+	int nvars;	// number of variables in the reader (exckuding masks)
 	
 	// simulation time
 	string sim_date0, sim_t0, sim_datef, sim_tf;
 	float dt;
-	int sim_start_yr;
+//	int sim_start_yr;
 	double gday_t0, gday_tf, gday_tb;
-	string tunits_out;
-	string time_step;
+	string tunits_out;		
+	string time_step;		// daily / monthly / yearly, etc.
 
 	// Model grid params
 	float mglon0, mglonf, mglat0, mglatf, mgdlon, mgdlat, mgdlev;
@@ -71,24 +56,25 @@ class MultiNcReader{
 	vector <float> grid_limits;
 
 	int nsteps;			// number of steps for which sim will run
-	int nsteps_spin; 	// number of spinup steps
-	int dstep; 			// progress display step 
+//	int nsteps_spin; 	// number of spinup steps
+//	int dstep; 			// progress display step 
 
 	// log file!
 	ofstream log_fout;
 	bool info_on, debug_on;
 
 	// single point output
-	float xlon, xlat;
-	int i_xlon, i_xlat;
+//	float xlon, xlat;
+//	int i_xlon, i_xlat;
 	string pointOutFile;
-	bool spout_on;
-	ofstream sp_fout, point_fout;
-	bool l_ncout;
+//	bool spout_on;
+//	ofstream sp_fout;
+	ofstream point_fout;
+//	bool l_ncout;
 
 	// global variables for use in this file only
 	string attrbegin;
-	bool l_ip_init_done;
+//	bool l_ip_init_done;
 
 	map <string, string> data_dirs;			// list of named dirs
 	map <string, ip_data> ip_data_map;		// ---

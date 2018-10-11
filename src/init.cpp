@@ -55,7 +55,7 @@ void ip_data::print(ostream &fout1){
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 MultiNcReader::MultiNcReader(string file){
 	attrbegin = ">";
-	l_ip_init_done = false;
+//	l_ip_init_done = false;
 	
 //	params_dir = "params_newdata";
 	params_file = file;
@@ -241,8 +241,8 @@ int MultiNcReader::create_sim_config(){
 	for (int i=0; i<nsteps; ++i) mgtimes[i] = (gday_t0 + i*dt/24.0 - gday_tb)*24.0;
 	
 	// number of steps after which to show a dot so that 40 dots make up 100%
-	dstep = nsteps/40;	
-	if (dstep == 0) ++dstep;
+//	dstep = nsteps/40;	
+//	if (dstep == 0) ++dstep;
 	
 
 }
@@ -294,7 +294,7 @@ int MultiNcReader::init_vars(){
 		++varcount;
 	}
 
-
+	nvars = vars.size() + static_vars.size();
 
 	// create input streams for variables in ip_data
 	log_fout << "<< Variables to be read from NC files: ";
