@@ -1,0 +1,16 @@
+*~
+
+*.jpg
+*.png
+*.nc
+*.txt
+*.dat
+*.gz
+
+build
+lib
+
+1
+nc2asc
+
+
