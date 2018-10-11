@@ -4,6 +4,7 @@
 //#include "../include/runs.h"
 using namespace std;
 
+MultiNcReader R;
 
 inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 	cout << "\n****************************************************************\n\n";
@@ -14,20 +15,18 @@ inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 	else cout << "progress (%) >> "; cout.flush();
 }
 
-extern map<string, ip_data> ip_data_map;
-
 
 int main_run(){
 
-	int dstep = nsteps/40+1;
+//	int dstep = nsteps/40+1;
 
-	printRunHeader("Main run", gday_t0, gday_t0 + (nsteps-1)*(dt/24.0), nsteps, dstep);
-	cout << endl;
+//	printRunHeader("Main run", gday_t0, gday_t0 + (nsteps-1)*(dt/24.0), nsteps, dstep);
+//	cout << endl;
 
-	for (int istep = 0; istep < nsteps; ++istep){
+	for (int istep = 0; istep < R.nsteps; ++istep){
 		
-		double t = read_nc_input_files(istep);
-		write_ascii_output(t);
+		double t = R.read_nc_input_files(istep);
+		R.write_ascii_output(t);
 		
 //		if (istep % dstep == 0) {cout << "."; cout.flush();}
 	}	
@@ -53,13 +52,13 @@ int main(){
 //	vector <float> glim(glimits, glimits+4);
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	init_firenet();
+	R.init_firenet();
 	
 //	prerun_canbio_ic();
 //	prerun_lmois_ic();
 	main_run();
 	
-	close_firenet();
+	R.close_firenet();
 	
 	return 0;
 }

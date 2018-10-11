@@ -69,7 +69,7 @@ dlon	0.5
 
 
 > OUTPUT_FILE
-outfile 	output/ascii_test_new.txt
+outfile 	output/ascii_test_new_class.txt
 
 
 > END

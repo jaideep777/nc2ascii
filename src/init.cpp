@@ -1,24 +1,25 @@
 #include "../include/init.h"
-#include "../include/globals.h"
+//#include "../include/globals.h"
 //#include "../include/vars.h"
 using namespace std;
 
-// global variables for use in this file only
-const string attrbegin = ">";
-static int l_ip_init_done = false;
-map <string, string> data_dirs;		// list of named dirs
-map <string, ip_data> ip_data_map;		// ---
-map <string, bool> writeVar_flags;		// 
-map <string, bool> writeVarSP_flags;	// maps from var_name to other things
-map <string, string> static_var_files; 	// 
-map <string, int> static_var_nlevs; 	// 
-map <string, string> mask_var_files; 	// 
-vector <gVar*> model_variables;			// using a vector here allows control over order of variables
+#define loginfo  if (info_on)  log_fout << "<info> "
+#define logdebug if (debug_on) log_fout << "<debug> "
 
-static string params_dir = "params_newdata";
-static string params_ft_file = params_dir + "/" + "params_ft.r";
-static string params_ip_file = params_dir + "/" + "params_ip.r";
-static string sim_config_file = params_dir + "/" + "sim_config.r";
+// global variables for use in this file only
+//const string attrbegin = ">";
+//static int l_ip_init_done = false;
+//map <string, string> data_dirs;		// list of named dirs
+//map <string, ip_data> ip_data_map;		// ---
+//map <string, bool> writeVar_flags;		// 
+//map <string, bool> writeVarSP_flags;	// maps from var_name to other things
+//map <string, string> static_var_files; 	// 
+//map <string, int> static_var_nlevs; 	// 
+//map <string, string> mask_var_files; 	// 
+//vector <gVar*> model_variables;			// using a vector here allows control over order of variables
+
+//static string params_dir = "params_newdata";
+//static string params_ip_file = params_dir + "/" + "params_ip.r";
 
 
 // Class ip_data
@@ -67,7 +68,17 @@ void ip_data::print(ostream &fout1){
 
 	READ INPUT PARAMS FILE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-int read_ip_params_file(){
+MultiNcReader::MultiNcReader(){
+	attrbegin = ">";
+	l_ip_init_done = false;
+	
+	params_dir = "params_newdata";
+	params_ip_file = params_dir + "/" + "params_ip.r";
+	
+}
+
+
+int MultiNcReader::read_ip_params_file(){
 	ifstream fin;
 	cout << "opening file: " << params_ip_file << endl;
 	fin.open(params_ip_file.c_str());
@@ -182,7 +193,7 @@ int read_ip_params_file(){
 	create a single gVar to be used in model and set metadata with model grid.
 	if it is to be written to output, create an NcOutputStream.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-int init_modelvar(gVar &v, string var_name, string unit, int nl, vector<double> times_vec, ostream& lfout){
+int MultiNcReader::init_modelvar(gVar &v, string var_name, string unit, int nl, vector<double> times_vec, ostream& lfout){
 	// create levels vector
 	vector <float> levs_vec(nl,0); 
 	for (int i=0; i<nl; ++i) levs_vec[i] = i; 
@@ -205,7 +216,7 @@ int init_modelvar(gVar &v, string var_name, string unit, int nl, vector<double> 
 
 
 
-int create_sim_config(){
+int MultiNcReader::create_sim_config(){
 
 	// Set Sim Date and Time
 	if (time_step == "daily"){
@@ -259,7 +270,7 @@ int create_sim_config(){
 //  Init oneshot input and stream input and output based on relevant mappings
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-int init_vars(){
+int MultiNcReader::init_vars(){
 
 
 	log_fout << "========== BEGIN VARIABLE INITIALIZATION ================\n";
@@ -396,7 +407,7 @@ int init_vars(){
 	
 	Call all init commands to do full sim init and show progress.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-int init_firenet(){
+int MultiNcReader::init_firenet(){
 	log_fout.open("output/log.txt");	// open log stream
 	log_fout << " ******************* THIS IS LOG FILE ****************************\n\n";
 
@@ -425,7 +436,7 @@ int init_firenet(){
 }
 
 
-int close_firenet(){
+int MultiNcReader::close_firenet(){
 
 	// close input streams
 	log_fout << "!! Closing input streams: ";
@@ -464,7 +475,7 @@ int close_firenet(){
 
 // ******* IO ************
 
-double read_nc_input_files(int istep){
+double MultiNcReader::read_nc_input_files(int istep){
 	double d = gday_t0 + istep*(dt/24.0);
 
 	int yr  = gt2year(d);
@@ -530,7 +541,7 @@ double read_nc_input_files(int istep){
 }
 
 
-int write_ascii_output(double gt){
+int MultiNcReader::write_ascii_output(double gt){
 
 
 	for (int ilat=0; ilat < mgnlats; ++ilat){
@@ -559,7 +570,7 @@ int write_ascii_output(double gt){
 }
 
 
-int write_nc_output(int islice){
+int MultiNcReader::write_nc_output(int islice){
 	for (int i=0; i<model_variables.size(); ++i){
 		string vname = model_variables[i]->varname;
 		if (model_variables[i]->lwrite){

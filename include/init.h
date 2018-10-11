@@ -32,20 +32,101 @@ public:
 	
 };
 
-// READ PARAMS FILES
-int read_ip_params_file();
-int read_sim_config_file();
-int read_veg_params_file();
+//// READ PARAMS FILES
+//int read_ip_params_file();
+//int read_sim_config_file();
+//int read_veg_params_file();
 
 
-int init_firenet();
+//int init_firenet();
 
-double read_nc_input_files(int istep);
+//double read_nc_input_files(int istep);
 
-int write_ascii_output(double gt);
-int write_nc_output(int islice);
+//int write_ascii_output(double gt);
+//int write_nc_output(int islice);
 
-int close_firenet();
+
+//int close_firenet();
+
+
+class MultiNcReader{
+	public:
+	
+	string params_dir;
+	string params_ip_file;
+	
+	// simulation time
+	string sim_date0, sim_t0, sim_datef, sim_tf;
+	float dt, dt_spinbio;
+	int sim_start_yr;
+	double gday_t0, gday_tf, gday_tb;
+	string tunits_out;
+	string time_step;
+
+	// Model grid params
+	float mglon0, mglonf, mglat0, mglatf, mgdlon, mgdlat, mgdlev;
+	int mgnlons, mgnlats, mgnlevs;
+	vector <float> mglons, mglats, mglevs;
+	vector <double> mgtimes;
+	vector <float> grid_limits;
+
+	int nsteps;			// number of steps for which sim will run
+	int nsteps_spin; 	// number of spinup steps
+	int dstep; 			// progress display step 
+
+	// log file!
+	ofstream log_fout;
+	bool info_on, debug_on;
+
+	// single point output
+	float xlon, xlat;
+	int i_xlon, i_xlat;
+	string pointOutFile;
+	bool spout_on;
+	ofstream sp_fout, point_fout;
+	bool l_ncout;
+
+	// global variables for use in this file only
+	string attrbegin;
+	bool l_ip_init_done;
+
+	map <string, string> data_dirs;			// list of named dirs
+	map <string, ip_data> ip_data_map;		// ---
+	map <string, bool> writeVar_flags;		// 
+	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
+	map <string, string> static_var_files; 	// 
+	map <string, int> static_var_nlevs; 	// 
+	map <string, string> mask_var_files; 	// 
+
+	vector <gVar*> model_variables;			// using a vector here allows control over order of variables
+
+	public:
+	vector <gVar> vars;
+	vector <gVar> static_vars;
+	vector <gVar> mask_vars;
+
+	public:
+	
+	MultiNcReader();
+	
+	int read_ip_params_file();
+	int create_sim_config();
+
+	int init_modelvar(gVar &v, string var_name, string unit, int nl, vector<double> times_vec, ostream& lfout);
+
+	int init_vars();
+	int init_firenet();
+
+	double read_nc_input_files(int istep);
+
+	int write_ascii_output(double gt);
+	int write_nc_output(int islice);
+
+	int close_firenet();
+
+};
+
+
 
 #endif
 
