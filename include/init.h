@@ -53,7 +53,7 @@ class MultiNcReader{
 	public:
 	
 	string params_dir;
-	string params_ip_file;
+	string params_file;
 	
 	// simulation time
 	string sim_date0, sim_t0, sim_datef, sim_tf;
@@ -92,8 +92,8 @@ class MultiNcReader{
 
 	map <string, string> data_dirs;			// list of named dirs
 	map <string, ip_data> ip_data_map;		// ---
-	map <string, bool> writeVar_flags;		// 
-	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
+//	map <string, bool> writeVar_flags;		// 
+//	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
 	map <string, string> static_var_files; 	// 
 	map <string, int> static_var_nlevs; 	// 
 	map <string, string> mask_var_files; 	// 
@@ -107,7 +107,9 @@ class MultiNcReader{
 
 	public:
 	
-	MultiNcReader();
+	MultiNcReader(string file);
+	
+	gVar& getVar(string s);
 	
 	int read_ip_params_file();
 	int create_sim_config();

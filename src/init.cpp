@@ -6,22 +6,6 @@ using namespace std;
 #define loginfo  if (info_on)  log_fout << "<info> "
 #define logdebug if (debug_on) log_fout << "<debug> "
 
-// global variables for use in this file only
-//const string attrbegin = ">";
-//static int l_ip_init_done = false;
-//map <string, string> data_dirs;		// list of named dirs
-//map <string, ip_data> ip_data_map;		// ---
-//map <string, bool> writeVar_flags;		// 
-//map <string, bool> writeVarSP_flags;	// maps from var_name to other things
-//map <string, string> static_var_files; 	// 
-//map <string, int> static_var_nlevs; 	// 
-//map <string, string> mask_var_files; 	// 
-//vector <gVar*> model_variables;			// using a vector here allows control over order of variables
-
-//static string params_dir = "params_newdata";
-//static string params_ip_file = params_dir + "/" + "params_ip.r";
-
-
 // Class ip_data
 ip_data::ip_data(){}
 
@@ -33,7 +17,8 @@ ip_data::ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, i
 				end_yr(_ey), 
 				nyrs_file(_ny),
 				nlevs(_nl),
-				mode(_mode) {
+				mode(_mode) 
+				{
 }
 		
 
@@ -68,22 +53,22 @@ void ip_data::print(ostream &fout1){
 
 	READ INPUT PARAMS FILE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-MultiNcReader::MultiNcReader(){
+MultiNcReader::MultiNcReader(string file){
 	attrbegin = ">";
 	l_ip_init_done = false;
 	
-	params_dir = "params_newdata";
-	params_ip_file = params_dir + "/" + "params_ip.r";
+//	params_dir = "params_newdata";
+	params_file = file;
 	
 }
 
 
 int MultiNcReader::read_ip_params_file(){
 	ifstream fin;
-	cout << "opening file: " << params_ip_file << endl;
-	fin.open(params_ip_file.c_str());
+	//cout << "opening file: " << params_file << endl;
+	fin.open(params_file.c_str());
 	if (!fin) {
-		cout << "Unable to open " << params_ip_file << endl;
+		cout << "Unable to open " << params_file << endl;
 		exit(-1);
 	}
 	
@@ -204,8 +189,8 @@ int MultiNcReader::init_modelvar(gVar &v, string var_name, string unit, int nl, 
 	v.fill(0);
 
 	// set bool values for variables to output
-	v.lwrite = writeVar_flags[var_name];	
-	v.lwriteSP = writeVarSP_flags[var_name] & spout_on;
+//	v.lwrite = writeVar_flags[var_name];	
+//	v.lwriteSP = writeVarSP_flags[var_name] & spout_on;
 	
 	v.setRegriddingMethod("bilinear");
 
@@ -262,6 +247,9 @@ int MultiNcReader::create_sim_config(){
 }
 
 
+gVar& MultiNcReader::getVar(string s){
+	
+}
 
 ///*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	--> init_vars()
@@ -281,7 +269,7 @@ int MultiNcReader::init_vars(){
 	int varcount = 0;
 	for (map <string, ip_data>::iterator it = ip_data_map.begin(); it != ip_data_map.end(); ++it){
 		string var_name = it->first;
-		cout << "var = " << var_name << endl;
+		cout << "\tvar = " << var_name << endl;
 		init_modelvar(vars[varcount],  var_name,  it->second.unit,  it->second.nlevs, mgtimes, log_fout);
 		++varcount;
 	}
@@ -291,7 +279,7 @@ int MultiNcReader::init_vars(){
 	vector <double> tsnap(1, (ymd2gday("2009-1-1")-gday_tb)*24);	// single time snapshot
 	for (map <string, string>::iterator it = static_var_files.begin(); it != static_var_files.end(); ++it){
 		string var_name = it->first;
-		cout << "stat var = " << var_name << endl;
+		cout << "\tstat var = " << var_name << endl;
 		init_modelvar(static_vars[varcount],  var_name,  "-",  static_var_nlevs[it->first], tsnap, log_fout);
 		++varcount;
 	}
@@ -300,7 +288,7 @@ int MultiNcReader::init_vars(){
  	varcount = 0;
 	for (map <string, string>::iterator it = mask_var_files.begin(); it != mask_var_files.end(); ++it){
 		string var_name = it->first;
-		cout << "mask var = " << var_name << endl;
+		cout << "\tmask var = " << var_name << endl;
 		init_modelvar(mask_vars[varcount],  var_name,  "-",  1, tsnap, log_fout);
 		++varcount;
 	}
@@ -355,7 +343,7 @@ int MultiNcReader::init_vars(){
 
 
 	// Create header for output ascii file
-	log_fout << "> Opening file to write point values: " << "ascii.txt" << '\n';
+	log_fout << "> Opening file to write point values: " << pointOutFile << '\n';
 	point_fout.open(pointOutFile.c_str());
 
 //	point_fout << "lat:\t " << xlat << "\t lon:\t" << xlon << "\n";
@@ -412,18 +400,18 @@ int MultiNcReader::init_firenet(){
 	log_fout << " ******************* THIS IS LOG FILE ****************************\n\n";
 
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-	cout << "~                  F I R E N E T                               ~\n";
+	cout << "~                 MULTI NC READER                              ~\n";
 	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
 //	cout << "\n> Reading config parameters... "; cout.flush();
 //	read_sim_config_file();
-	cout << "DONE.\n> Reading input filenames... "; cout.flush();
+	cout << "> Reading params file: " << params_file << " | "; cout.flush();
 	read_ip_params_file();
 	create_sim_config();
 //	cout << "DONE.\n> Reading forest type params... "; cout.flush();
 //	read_veg_params_file();
 	cout << "DONE.\n> Initialising variables... \n"; cout.flush();
 	init_vars();	
-	cout << "DONE.\n";
+//	cout << "DONE.\n";
 	
 	
 //	// check for consistency in vegtype levels and PFTs

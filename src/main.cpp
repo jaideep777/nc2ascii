@@ -4,7 +4,6 @@
 //#include "../include/runs.h"
 using namespace std;
 
-MultiNcReader R;
 
 inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 	cout << "\n****************************************************************\n\n";
@@ -16,7 +15,7 @@ inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 }
 
 
-int main_run(){
+int main_run(MultiNcReader &R){
 
 //	int dstep = nsteps/40+1;
 
@@ -37,7 +36,7 @@ int main_run(){
 
 
 
-int main(){
+int main(int argc, char ** argv){
 
 	// ~~~~~~ Essentials ~~~~~~~~
 	// set NETCDF error behavior to non-fatal
@@ -51,12 +50,13 @@ int main(){
 //	float glimits[] = {0, 150, -60, 60};
 //	vector <float> glim(glimits, glimits+4);
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~
+	MultiNcReader R(argv[1]);
 
 	R.init_firenet();
 	
 //	prerun_canbio_ic();
 //	prerun_lmois_ic();
-	main_run();
+	main_run(R);
 	
 	R.close_firenet();
 	
