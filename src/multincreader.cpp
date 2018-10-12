@@ -1,4 +1,4 @@
-#include "../include/init.h"
+#include "../include/multincreader.h"
 //#include "../include/globals.h"
 //#include "../include/vars.h"
 using namespace std;

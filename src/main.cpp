@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/init.h"
+#include "../include/multincreader.h"
 //#include "../include/globals.h"
 //#include "../include/runs.h"
 using namespace std;

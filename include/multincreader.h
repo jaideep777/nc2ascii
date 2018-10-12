@@ -1,5 +1,5 @@
-#ifndef INIT_H
-#define INIT_H
+#ifndef MULTI_NC_READER_H
+#define MULTI_NC_READER_H
 
 #include <iostream>
 #include <fstream>
@@ -43,7 +43,6 @@ class MultiNcReader{
 	// simulation time
 	string sim_date0, sim_t0, sim_datef, sim_tf;
 	float dt;
-//	int sim_start_yr;
 	double gday_t0, gday_tf, gday_tb;
 	string tunits_out;		
 	string time_step;		// daily / monthly / yearly, etc.
@@ -56,33 +55,23 @@ class MultiNcReader{
 	vector <float> grid_limits;
 
 	int nsteps;			// number of steps for which sim will run
-//	int nsteps_spin; 	// number of spinup steps
-//	int dstep; 			// progress display step 
 
 	// log file!
 	ofstream log_fout;
 	bool info_on, debug_on;
 
-	// single point output
-//	float xlon, xlat;
-//	int i_xlon, i_xlat;
+	// output
 	string pointOutFile;
-//	bool spout_on;
-//	ofstream sp_fout;
 	ofstream point_fout;
-//	bool l_ncout;
 
 	// global variables for use in this file only
 	string attrbegin;
-//	bool l_ip_init_done;
 
 	map <string, string> data_dirs;			// list of named dirs
 	map <string, ip_data> ip_data_map;		// ---
 	map <string, string> static_var_files; 	// 
 	map <string, int> static_var_nlevs; 	// 
 	map <string, string> mask_var_files; 	// 
-//	map <string, bool> writeVar_flags;		// 
-//	map <string, bool> writeVarSP_flags;	// maps from var_name to other things
 
 	vector <gVar*> model_variables;			// using a vector here allows control over order of variables
 	map<string, gVar*> all_vars_map;			// using a map here allows quick searching of variables by name 
