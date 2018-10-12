@@ -87,20 +87,21 @@ class MultiNcReader{
 	
 	gVar& getVar(string s);
 	
-	int read_ip_params_file();
+	int read_params_file();
 	int create_sim_config();
 
 	int init_modelvar(gVar &v, string var_name, string unit, int nl, vector<double> times_vec, ostream& lfout);
 
 	int init_vars();
-	int init_firenet();
+	
+	int init();
 
-	double read_nc_input_files(int istep);
+	double nc_read_frame(int istep);
 
-	int write_ascii_output(double gt);
-	int write_nc_output(int islice);
+	int ascii_write_frame(double gt);
+	int nc_write_frame(int islice);
 
-	int close_firenet();
+	int close();
 
 };
 

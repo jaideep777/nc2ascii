@@ -24,8 +24,8 @@ int main_run(MultiNcReader &R){
 
 	for (int istep = 0; istep < R.nsteps; ++istep){
 		
-		double t = R.read_nc_input_files(istep);
-		R.write_ascii_output(t);
+		double t = R.nc_read_frame(istep);
+		R.ascii_write_frame(t);
 		
 //		if (istep % dstep == 0) {cout << "."; cout.flush();}
 	}	
@@ -52,15 +52,17 @@ int main(int argc, char ** argv){
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~
 	MultiNcReader R(argv[1]);
 
-	R.init_firenet();
+	R.init();
 	
 //	prerun_canbio_ic();
 //	prerun_lmois_ic();
 	main_run(R);
 	
-	R.close_firenet();
+	R.close();
 	
 	return 0;
 }
+
+
 
 

@@ -49,7 +49,7 @@ void ip_data::print(ostream &fout1){
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	--> read_ip_params_file()
+	--> read_params_file()
 
 	READ INPUT PARAMS FILE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -63,7 +63,7 @@ MultiNcReader::MultiNcReader(string file){
 }
 
 
-int MultiNcReader::read_ip_params_file(){
+int MultiNcReader::read_params_file(){
 	ifstream fin;
 	//cout << "opening file: " << params_file << endl;
 	fin.open(params_file.c_str());
@@ -392,11 +392,11 @@ int MultiNcReader::init_vars(){
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	--> init_firenet()
+	--> init()
 	
 	Call all init commands to do full sim init and show progress.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-int MultiNcReader::init_firenet(){
+int MultiNcReader::init(){
 	log_fout.open("output/log.txt");	// open log stream
 	log_fout << " ******************* THIS IS LOG FILE ****************************\n\n";
 
@@ -406,7 +406,7 @@ int MultiNcReader::init_firenet(){
 //	cout << "\n> Reading config parameters... "; cout.flush();
 //	read_sim_config_file();
 	cout << "> Reading params file: " << params_file << " | "; cout.flush();
-	read_ip_params_file();
+	read_params_file();
 	create_sim_config();
 //	cout << "DONE.\n> Reading forest type params... "; cout.flush();
 //	read_veg_params_file();
@@ -425,7 +425,7 @@ int MultiNcReader::init_firenet(){
 }
 
 
-int MultiNcReader::close_firenet(){
+int MultiNcReader::close(){
 
 	// close input streams
 	log_fout << "!! Closing input streams: ";
@@ -464,7 +464,7 @@ int MultiNcReader::close_firenet(){
 
 // ******* IO ************
 
-double MultiNcReader::read_nc_input_files(int istep){
+double MultiNcReader::nc_read_frame(int istep){
 	double d = gday_t0 + istep*(dt/24.0);
 
 	int yr  = gt2year(d);
@@ -530,7 +530,7 @@ double MultiNcReader::read_nc_input_files(int istep){
 }
 
 
-int MultiNcReader::write_ascii_output(double gt){
+int MultiNcReader::ascii_write_frame(double gt){
 
 
 	for (int ilat=0; ilat < mgnlats; ++ilat){
@@ -559,7 +559,7 @@ int MultiNcReader::write_ascii_output(double gt){
 }
 
 
-int MultiNcReader::write_nc_output(int islice){
+int MultiNcReader::nc_write_frame(int islice){
 	for (int i=0; i<model_variables.size(); ++i){
 		string vname = model_variables[i]->varname;
 		if (model_variables[i]->lwrite){
