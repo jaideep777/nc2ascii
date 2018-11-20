@@ -59,6 +59,8 @@ MultiNcReader::MultiNcReader(string file){
 	
 //	params_dir = "params_newdata";
 	params_file = file;
+	ncout = false;
+	ascout = false;
 	
 }
 
@@ -342,31 +344,26 @@ int MultiNcReader::init_vars(){
 	}
 	log_fout << "\n\n" << endl;
 
+	if (ascout){
+		// Create header for output ascii file
+		log_fout << "> Opening file to write point values: " << pointOutFile << '\n';
+		point_fout.open(pointOutFile.c_str());
 
-	// Create header for output ascii file
-	log_fout << "> Opening file to write point values: " << pointOutFile << '\n';
-	point_fout.open(pointOutFile.c_str());
+		point_fout << "date\ttime\tlat\tlon" << "\t"; 
 
-//	point_fout << "lat:\t " << xlat << "\t lon:\t" << xlon << "\n";
-//	point_fout << "vegtype fractions:\n X\t AGR\t NLE\t BLE\t MD\t DD\t GR\t SC\n";
-//	for (int i=0; i<npft; ++i){
-//		point_fout << vegtype.getCellValue(xlon,xlat, i) << "\t"; 
-//	}
-//	point_fout << "\n";
-
-	point_fout << "date\ttime\tlat\tlon" << "\t"; 
-
-	log_fout << ">> Variables to be written to point_output file: ";
-	for (int i=0; i<model_variables.size(); ++i){
-		string vname = model_variables[i]->varname;
-		int nl = model_variables[i]->nlevs;
-		log_fout << vname << ", ";
-		if (nl == 1) point_fout << vname << "\t";
-		else{
-			for (int z=0; z<nl; ++z) point_fout << vname << z << "\t";
-		}				
+		log_fout << ">> Variables to be written to point_output file: ";
+		for (int i=0; i<model_variables.size(); ++i){
+			string vname = model_variables[i]->varname;
+			int nl = model_variables[i]->nlevs;
+			log_fout << vname << ", ";
+			if (nl == 1) point_fout << vname << "\t";
+			else{
+				for (int z=0; z<nl; ++z) point_fout << vname << z << "\t";
+			}				
+		}
+		point_fout << endl;
 	}
-	point_fout << endl;
+
 	log_fout << endl;
 
 	log_fout << "\n========== END VARIABLE INITIALIZATION ================\n\n" << endl;
@@ -442,7 +439,8 @@ int MultiNcReader::close(){
 	}
 	log_fout << "- Done." << endl;
 
-
+	if (ascout) point_fout.close();
+	
 //	// close output streams 
 //	log_fout << "!! Closing output streams: ";
 //	for (int i=0; i<model_variables.size(); ++i){
@@ -523,6 +521,12 @@ double MultiNcReader::nc_read_frame(int istep){
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}
+		else if (ip_data_map[vars[i].varname].mode == "prev_yearly"){ 
+			double tstart1 = ymd2gday(yr-1,1,1);
+			double tend1   = ymd2gday(yr-1,12,31) + 23.9/24;
+			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
+			vars[i].readVar_reduce_mean(tstart1, tend1);
+		}
 	}
 	
 	return (tstart+tend)/2;
@@ -532,16 +536,12 @@ double MultiNcReader::nc_read_frame(int istep){
 
 int MultiNcReader::ascii_write_frame(double gt){
 
-
+	if (!ascout) return 1;
+	
 	for (int ilat=0; ilat < mgnlats; ++ilat){
 	for (int ilon=0; ilon < mgnlons; ++ilon){
 		
-		bool masked = false;
-		for (int i=0; i < mask_vars.size(); ++i){
-			if (mask_vars[i](ilon, ilat, 0) == 0 || mask_vars[i](ilon, ilat, 0) == mask_vars[i].missing_value){
-				masked = true;
-			}
-		}		
+		bool masked = ismasked(ilon, ilat);
 		
 		if (!masked){
 			point_fout << gt2string_date(gt) << "\t" << gt2string_time(gt) << "\t"; 
@@ -555,6 +555,8 @@ int MultiNcReader::ascii_write_frame(double gt){
 		}
 	}	
 	}
+	
+	return 0;
 
 }
 
@@ -569,5 +571,14 @@ int MultiNcReader::nc_write_frame(int islice){
 }
 
 
+bool MultiNcReader::ismasked(int ilon, int ilat){
+	bool masked = false;
+	for (int i=0; i < mask_vars.size(); ++i){
+		if (mask_vars[i](ilon, ilat, 0) == 0 || mask_vars[i](ilon, ilat, 0) == mask_vars[i].missing_value){
+			masked = true;
+		}
+	}		
+	return masked;
+}
 
 

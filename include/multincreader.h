@@ -61,6 +61,7 @@ class MultiNcReader{
 	bool info_on, debug_on;
 
 	// output
+	bool ascout, ncout;
 	string pointOutFile;
 	ofstream point_fout;
 
@@ -102,6 +103,8 @@ class MultiNcReader{
 	int nc_write_frame(int islice);
 
 	int close();
+
+	bool ismasked(int ilon, int ilat);
 
 };
 
