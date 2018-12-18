@@ -2,7 +2,7 @@
 
 sim_name           <- "ssaplus_pureNN"
 
-fire_dir = "."
+fire_dir = "~/codes/PureNN_fire"
 
 #### Init ####
 suffix = ""
@@ -20,8 +20,11 @@ ba_classes = c(0, seq(-6,0,by=0.25))
 datm$gfedclass = sapply(log10(datm$gfed),FUN = function(x){length(which(x>ba_classes))})
 
 datm$pop = log(1+datm$pop)
-datm$prev_ba = log(1e-8+datm$prev_ba)
-  
+datm$prev_ba = log(1e-5+datm$prev_ba)
+datm$pr = log(1e-3+datm$pr)
+datm$npp = log(1e-3+datm$npp)
+
+
 threshold_forest_frac = 0.3
 
 dat_bad = datm[!complete.cases(datm),]
@@ -87,7 +90,7 @@ plot.cut.means_obs = function(obs, var, min, max, col.obs, col.pred, ...){
 }
 
 
-ids_test = which(as.Date(datf$date) >= as.Date("2008-1-1") & as.Date(datf$date) <= as.Date("2010-12-31"))
+ids_test = which(as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31"))
 # ids_test = which(datf$date >= as.Date("2013-1-1"))
 
 dat_test = datf[ids_test,]

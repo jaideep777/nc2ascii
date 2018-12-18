@@ -30,7 +30,7 @@ void init_eval(MultiNcReader &R, string wts_file){
 
 	cout << "> Running in EVAL mode." << endl;
 	
-	try{1
+	try{
 		cout << "> Reading Weights file " << wts_file;
 		fireNet.initFromFile(wts_file, true);
 		fireNet.activation_fcn = elu;
@@ -86,12 +86,16 @@ void write_eval(MultiNcReader &R){
 			x.push_back(R.getVar("rh")(ilon, ilat, 0));
 			x.push_back(R.getVar("ts")(ilon, ilat, 0));
 			x.push_back(R.getVar("prev_npp")(ilon, ilat, 0));
-			x.push_back(R.getVar("pr")(ilon, ilat, 0));
+			x.push_back(R.getVar("prev_pr")(ilon, ilat, 0));
+			x.push_back(log(1e-5+R.getVar("prev_ba")(ilon, ilat, 0)));
+			x.push_back(log(1e-3+R.getVar("pr")(ilon, ilat, 0)));
+			x.push_back(log(1e-3+R.getVar("npp")(ilon, ilat, 0)));
+//			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
 
-			for (int ilev=0; ilev<R.getVar("ftmap").nlevs; ++ilev)
+			for (int ilev=1; ilev<R.getVar("ftmap").nlevs; ++ilev)
 				x.push_back(R.getVar("ftmap")(ilon, ilat, ilev));
 
-			x.push_back(log(1e-8+R.getVar("pop")(ilon, ilat, 0)));
+			x.push_back(log(1+R.getVar("pop")(ilon, ilat, 0)));
 
 //			for (int i=0; i< x.size(); ++i) cout << x[i] << " ";
 //			cout << endl;

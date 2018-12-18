@@ -9,7 +9,7 @@ using namespace std;
 // Class ip_data
 ip_data::ip_data(){}
 
-ip_data::ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, int _nl, string _mode) : 
+ip_data::ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, int _nl, string _mode, string _interpolation) : 
 				name(_n), 
 				unit(_u), 
 				fname_prefix(_fnp), 
@@ -17,7 +17,8 @@ ip_data::ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, i
 				end_yr(_ey), 
 				nyrs_file(_ny),
 				nlevs(_nl),
-				mode(_mode) 
+				mode(_mode),
+				interpolation(_interpolation)
 				{
 }
 		
@@ -98,9 +99,9 @@ int MultiNcReader::read_params_file(){
 	while (fin >> s && s != attrbegin){
 		if (s == "") continue;	// skip empty lines
 		if (s == "#") {getline(fin,s,'\n'); continue;}	// skip # following stuff (comments)
-		fin >> u >> v >> m >> l >> n >> k >> w;
+		fin >> u >> v >> m >> l >> n >> k >> w >> y;
 
-		ip_data a(s, u, v, m, l, n, k, w);
+		ip_data a(s, u, v, m, l, n, k, w, y);
 		a.generate_filenames(parent_dir+"/"+data_dirs[s]);
 		ip_data_map.insert( pair <string, ip_data> (s,a) );
 		ip_data_map[s].print(log_fout);
@@ -274,6 +275,7 @@ int MultiNcReader::init_vars(){
 		string var_name = it->first;
 		cout << "\tvar = " << var_name << endl;
 		init_modelvar(vars[varcount],  var_name,  it->second.unit,  it->second.nlevs, mgtimes, log_fout);
+		vars[varcount].setRegriddingMethod(it->second.interpolation);
 		++varcount;
 	}
 

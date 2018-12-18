@@ -9,6 +9,7 @@ ts		ncep_reanalysis/ts
 rh		ncep_reanalysis/rhum
 wsp		ncep_reanalysis/wsp
 pr		precip_trmm/combined/reordered_dims
+prev_pr	precip_trmm/combined/reordered_dims
 ndr		ndr_daily
 npp		GPP_modis
 # ffev	fire_events_modis/india/fire_modis_0.5
@@ -20,18 +21,19 @@ prev_npp	GPP_modis
 
 > FORCING_VARIABLE_DATA
 # name | unit 	|	prefix   		|	start_yr |	end_yr | nyrs/file | nlevs |    T mode			| Interpolation
-ts		 K			air.sig995			2000		2015		1			1		linear			
-rh		 %			rhum.sig995			2000		2015		1			1		linear			
-wsp		 m/s		wsp.sig995			2000		2015		1			1		linear			
-pr		 mm/day		pr.trmm-perm		2000		2015		1			1		linear			
-ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	
-npp		 gC/m2/s	npp					2000		2015		16			1		linear			
-# ffev	 f/day		fire_events			2000		2015		1			1		linear			
-# ba		 m2			burned_area_0.5deg	2001		2016		16			1		linear		
-gfed	 %			GFED_4.1s_0.5deg	1997 		2016		20			1		linear			
-cld		 -			tcdc.eatm.gauss		2000		2015		1			1		linear			
-prev_ba	 %			GFED_4.1s_0.5deg	1997 		2016		20			1		prev_yearly		
-prev_npp gC/m2/s	npp					2000		2015		16			1		prev_yearly
+ts		 K			air.sig995			2000		2015		1			1		linear			 bilinear
+rh		 %			rhum.sig995			2000		2015		1			1		linear			 bilinear
+wsp		 m/s		wsp.sig995			2000		2015		1			1		linear			 bilinear
+pr		 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 bilinear
+ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	 bilinear
+npp		 gC/m2/s	npp					2000		2015		16			1		linear			 bilinear
+# ffev	 f/day		fire_events			2000		2015		1			1		linear			 bilinear
+# ba		 m2			burned_area_0.5deg	2001		2016		16			1		linear		 bilinear
+gfed	 %			GFED_4.1s_0.5deg	1997 		2016		20			1		linear			 bilinear
+cld		 -			tcdc.eatm.gauss		2000		2015		1			1		linear			 bilinear
+prev_ba	 %			GFED_4.1s_0.5deg	1997 		2016		20			1		prev_yearly		 bilinear
+prev_npp gC/m2/s	npp					2000		2015		16			1		prev_yearly		 bilinear
+prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 bilinear	
 
 # file name will be taken as "prefix.yyyy.nc" or "prefix.yyyy-yyyy.nc"
 # value types: ins (instantaneous), sum, avg (not used as of now)
@@ -39,7 +41,7 @@ prev_npp gC/m2/s	npp					2000		2015		16			1		prev_yearly
 #	hold = hold previous value till next value is available
 #	lter = interpolate in-between values (using previous and next times)
 #	auto = hold for avg variables, lter for ins variables, sum-conservative random for sum variables
-	
+
 > STATIC_INPUT_FILES
 # var	|	nlevs | file 
 ftmap 		11 		forest_type/MODIS/ftmap_modis_SASplus_0.5deg_11levs_noMixed.nc
@@ -55,7 +57,7 @@ msk			util_data/masks/surta_global_0.5_sl.nc
 
 > TIME
 timestep 	monthly
-start_date	2007-1-1
+start_date	2002-1-1
 start_time	0:0:0
 end_date	2015-12-31
 end_time	23:0:0	

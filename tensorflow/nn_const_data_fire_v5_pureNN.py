@@ -32,18 +32,19 @@ ID_npp 		= 7
 ID_pr 		= 8
 ID_prevba	= 9
 ID_prevnpp	= 10
-ID_rh 		= 11
-ID_ts 		= 12
-ID_wsp 		= 13
-ID_elev 	= 15
-ID_ft		= range(16,27)
-ID_pop		= 27
+ID_prevpr	= 11
+ID_rh 		= 12
+ID_ts 		= 13
+ID_wsp 		= 14
+ID_elev 	= 16
+ID_ft		= range(18,28)
+ID_pop		= 28
 
-ID_gfed		= 30 # 30 for gfed4
+ID_gfed		= 31 # 30 for gfed4
 
 
 #X_ids = [ID_rh, ID_ts,  ID_wsp,  ID_dxl ,  ID_lmois, ID_pop, ID_agf]
-X_ids = [ID_rh, ID_ts, ID_prevnpp, ID_pr] + ID_ft + [ID_pop] 
+X_ids = [ID_rh, ID_ts, ID_prevnpp, ID_prevpr, ID_prevba, ID_pr, ID_npp ] + ID_ft + [ID_pop] 
 n_inputs = len(X_ids)
 	
 # functions to initialize weights and biases

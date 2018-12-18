@@ -22,11 +22,12 @@ public:
 	int 				nyrs_file;				// #yrs in file (1 or more)
 	int 				nlevs;
 	string 				mode;					// should data be interpreted as linear (exact date provided must be looked for OR cyclic - only day in year is relevant)
+	string 				interpolation;			// spatial interpolation strategy - bilinear, nn, or coarsegrain?
 	
 	vector <string>		fnames;					// list of filenames (genrated during init)
 	
 	ip_data(); 
-	ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, int _nl, string _mode); 
+	ip_data(string _n, string _u, string _fnp, int _sy, int _ey, int _ny, int _nl, string _mode, string _interpolation); 
 	int generate_filenames(string dir = "");
 	void print(ostream &fout1);
 	
