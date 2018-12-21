@@ -6,17 +6,9 @@ import numpy as np
 from numpy import genfromtxt
 import sys
 
-#"""
 
-#  This code demonstrates 2 neuron NN
-#  
-#"""
 
-sim_name = 'ssaplus_pureNN'
-suffix = ''
-if sim_name != '':
-  suffix = suffix + '_' + sim_name
-
+output_dir = 'output_africa'
 
 __learn_rate = 0.005
 __batch_size = 5000
@@ -37,10 +29,10 @@ ID_rh 		= 12
 ID_ts 		= 13
 ID_wsp 		= 14
 ID_elev 	= 16
-ID_ft		= range(18,28)
-ID_pop		= 28
+ID_ft		= range(18,29)
+ID_pop		= 29
 
-ID_gfed		= 31 # 30 for gfed4
+ID_gfed		= 32 # 30 for gfed4
 
 
 #X_ids = [ID_rh, ID_ts,  ID_wsp,  ID_dxl ,  ID_lmois, ID_pop, ID_agf]
@@ -88,7 +80,7 @@ def denseNet(x, W1,b1,Wo,bo):
 ### PREPARE TRAINING DATA AS NUMPY ARRAYS ###
 
 print("Reading training data...")
-my_data = genfromtxt('../output'+suffix+'/train_forest.csv', delimiter=',',skip_header=1)
+my_data = genfromtxt('../'+output_dir+'/train_forest.csv', delimiter=',',skip_header=1)
 print("DONE")
 np.set_printoptions(precision=3, suppress=True)
 print("--------------")
@@ -106,11 +98,11 @@ print(Xmeans)
 print("--------------")
 
 print("Reading evalutation data...")
-eval_data = genfromtxt('../output'+suffix+'/eval_forest.csv', delimiter=',',skip_header=1)
+eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
 print(eval_data[0:5, X_ids+[ID_gfed]])
 
 print("Reading test data...")
-test_data = genfromtxt('../output'+suffix+'/test_forest.csv', delimiter=',',skip_header=1)
+test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
 print(test_data[0:5, X_ids+[ID_gfed]])
 print("--------------")
 
@@ -252,9 +244,9 @@ with tf.Session() as sess:
   y_ts = sess.run(tf.nn.softmax(denseNet(tf.reshape(xtest, [-1,n_inputs]),W1,b1,Wo,bo)))
 
 
-  np.savetxt("../output"+suffix+"/y_predic_ba_train.txt",y_tr,delimiter=" ")
-  np.savetxt("../output"+suffix+"/y_predic_ba_eval.txt",y_ev,delimiter=" ")
-  np.savetxt("../output"+suffix+"/y_predic_ba_test.txt",y_ts,delimiter=" ")
+  np.savetxt("../"+output_dir+"/y_predic_ba_train.txt",y_tr,delimiter=" ")
+  np.savetxt("../"+output_dir+"/y_predic_ba_eval.txt",y_ev,delimiter=" ")
+  np.savetxt("../"+output_dir+"/y_predic_ba_test.txt",y_ts,delimiter=" ")
 
 
 #  def rmb(s):	# small function to remove square brackets from printed arrays 
@@ -268,7 +260,7 @@ with tf.Session() as sess:
   np.set_printoptions(precision=10)
   
   orig_stdout = sys.stdout
-  f = open("../output"+suffix+"/weights_ba.txt",'w')
+  f = open("../"+output_dir+"/weights_ba.txt",'w')
   sys.stdout = f
 
   print(1)
@@ -293,7 +285,7 @@ with tf.Session() as sess:
   sys.stdout=orig_stdout;  
   f.close()
   
-  np.savetxt("../output"+suffix+"/ce_and_accuracy.txt", [ce_avg/count, acc_avg/count,  accv_avg/count, acct_avg/count])  
+  np.savetxt("../"+output_dir+"/ce_and_accuracy.txt", [ce_avg/count, acc_avg/count,  accv_avg/count, acct_avg/count])  
   
   
 

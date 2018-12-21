@@ -56,7 +56,7 @@ void init_eval(MultiNcReader &R, string wts_file){
 	vector <float> levs1(1,0);
 	fire = gVar("fire", "-", "hours since "+gday2ymd(R.gday_tb));
 	fire.setCoords(tvec, levs1, R.mglats, R.mglons);
-	fire.fill(0);
+	fire.fill(fire.missing_value);
 
 	string fname = "fire."+R.sim_date0+"-"+R.sim_datef+".nc";
 	fire.createNcOutputStream(fname);
@@ -71,9 +71,8 @@ void write_eval(MultiNcReader &R){
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 			
-		float ba_pred = 0;
-
 		if (! R.ismasked(ilon,ilat)){ 
+			float ba_pred = 0;
 			vector <float> x;
 //			for (int i=0; i<R.vars.size(); ++i){
 //				for (int ilev=0; ilev<R.vars[i].nlevs; ++ilev)
@@ -104,9 +103,9 @@ void write_eval(MultiNcReader &R){
 			Matrix Y = fireNet.forward_prop(X, true);
 
 			for (int i=0; i<Y.m*Y.n; ++i) ba_pred += ba_classes_mids[i]*Y.data[i];
+			fire(ilon, ilat, 0) = ba_pred; //exp(nfires/6.7)-1;
+
 		}
-		
-		fire(ilon, ilat, 0) = ba_pred; //exp(nfires/6.7)-1;
 
 	}
 	}
@@ -128,6 +127,13 @@ int main_run(MultiNcReader &R){
 	for (int istep = 0; istep < R.nsteps; ++istep){
 		
 		double t = R.nc_read_frame(istep);
+		
+		string fname = "pr_" + int2str(istep) + ".nc";
+		R.getVar("pr").writeOneShot(fname);
+
+		string fname1 = "gfed_" + int2str(istep) + ".nc";
+		R.getVar("gfed").writeOneShot(fname1);
+
 
 		if (train) R.ascii_write_frame(t);
 		if (eval) write_eval(R);
@@ -139,7 +145,7 @@ int main_run(MultiNcReader &R){
 }
 
 
-
+// usage: ./nc2asc 
 
 int main(int argc, char ** argv){
 

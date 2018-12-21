@@ -112,9 +112,10 @@ int MultiNcReader::read_params_file(){
 	while (fin >> s && s != attrbegin){
 		if (s == "") continue;	// skip empty lines
 		if (s == "#") {getline(fin,s,'\n'); continue;}	// skip #followed lines (comments)
-		fin >> n >> u;
+		fin >> n >> v >> u;
 		static_var_files[s] = parent_dir + "/" + u;
 		static_var_nlevs[s] = n;
+		static_var_interp[s] = v;
 //		writeVar_flags[s] = false;		// static variables are not written to output, by default
 //		writeVarSP_flags[s] = false;	// 
 	}
@@ -124,8 +125,9 @@ int MultiNcReader::read_params_file(){
 	while (fin >> s && s != attrbegin){
 		if (s == "") continue;	// skip empty lines
 		if (s == "#") {getline(fin,s,'\n'); continue;}	// skip #followed lines (comments)
-		fin >> u;
+		fin >> v >> u;
 		mask_var_files[s] = parent_dir + "/" + u;
+		mask_var_interp[s] = v;
 //		mask_var_nlevs[s] = n;
 //		writeVar_flags[s] = false;		// static variables are not written to output, by default
 //		writeVarSP_flags[s] = false;	// 
@@ -195,7 +197,7 @@ int MultiNcReader::init_modelvar(gVar &v, string var_name, string unit, int nl, 
 //	v.lwrite = writeVar_flags[var_name];	
 //	v.lwriteSP = writeVarSP_flags[var_name] & spout_on;
 	
-	v.setRegriddingMethod("bilinear");
+//	v.setRegriddingMethod("bilinear");
 
 	// add gVar to model variables list and to all_vars map
 	model_variables.push_back(&v);
@@ -286,6 +288,7 @@ int MultiNcReader::init_vars(){
 		string var_name = it->first;
 		cout << "\tstat var = " << var_name << endl;
 		init_modelvar(static_vars[varcount],  var_name,  "-",  static_var_nlevs[it->first], tsnap, log_fout);
+		static_vars[varcount].setRegriddingMethod(static_var_interp[it->first]);
 		++varcount;
 	}
 
@@ -295,6 +298,7 @@ int MultiNcReader::init_vars(){
 		string var_name = it->first;
 		cout << "\tmask var = " << var_name << endl;
 		init_modelvar(mask_vars[varcount],  var_name,  "-",  1, tsnap, log_fout);
+		mask_vars[varcount].setRegriddingMethod(mask_var_interp[it->first]);
 		++varcount;
 	}
 
@@ -308,7 +312,9 @@ int MultiNcReader::init_vars(){
 			log_fout << vname << ", ";
 
 			// create input stream
-			model_variables[i]->createNcInputStream(ip_data_map.find(vname)->second.fnames, grid_limits);
+			model_variables[i]->createNcInputStream(ip_data_map.find(vname)->second.fnames, 
+													grid_limits, 
+													ip_data_map.find(vname)->second.interpolation);
 		}
 		else{
 		} 
@@ -576,7 +582,7 @@ int MultiNcReader::nc_write_frame(int islice){
 bool MultiNcReader::ismasked(int ilon, int ilat){
 	bool masked = false;
 	for (int i=0; i < mask_vars.size(); ++i){
-		if (mask_vars[i](ilon, ilat, 0) == 0 || mask_vars[i](ilon, ilat, 0) == mask_vars[i].missing_value){
+		if (mask_vars[i](ilon, ilat, 0) < 0.5 || mask_vars[i](ilon, ilat, 0) == mask_vars[i].missing_value){
 			masked = true;
 		}
 	}		

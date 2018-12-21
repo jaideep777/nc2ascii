@@ -1,8 +1,8 @@
 #!/bin/bash
 FOLDER=output_ssaplus_pureNN
-EXPT=mod1_full
+MODEL=mod1_full
 
-mkdir -p $FOLDER/$EXPT
+mkdir -p $FOLDER/$MODEL
 
 make 
 
@@ -15,13 +15,13 @@ cd tensorflow
 ./runtf 
 cd ..
 cd $FOLDER
-mv y_predic_ba_* ce_and_accuracy.txt weights_ba.txt $EXPT/
+mv y_predic_ba_* ce_and_accuracy.txt weights_ba.txt $MODEL/
 cd ..
 
 # Run trained NN on data
-./nc2asc eval params_newdata/params_ip.r $FOLDER/$EXPT/weights_ba.txt
-cdo ifthen /home/jaideep/Data/forest_type/MODIS/ftmask_MODIS_0.5deg.nc -sellonlatbox,60.25,99.75,5.25,49.75 fire.2002-1-1-2015-12-31.nc fire_pred_masked.nc
-mv fire.2002-1-1-2015-12-31.nc fire_pred_masked.nc $FOLDER/$EXPT
+./nc2asc eval params_newdata/params_ip.r $FOLDER/$MODEL/weights_ba.txt
+#cdo ifthen /home/jaideep/Data/forest_type/MODIS/ftmask_MODIS_0.5deg.nc -sellonlatbox,60.25,99.75,5.25,49.75 fire.2002-1-1-2015-12-31.nc fire_pred_masked.nc
+mv fire.2002-1-1-2015-12-31.nc fire_pred_masked.nc $FOLDER/$MODEL
 
 # Plot results
 cd Rscripts

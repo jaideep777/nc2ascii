@@ -2,21 +2,14 @@ rm(list = ls())
 #### PREDICTED FIRES - CALIBRATION ####
 
 fire_dir = "~/codes/PureNN_fire"
+output_dir = "output_africa"
+model_dir = "mod1_full"
+
 source(paste0(fire_dir,"/Rscripts/utils.R"))
 
-sim_name           <- "ssaplus_pureNN/mod1_full"
-suffix = ""
-if (sim_name != "") suffix = paste0(suffix,"_",sim_name)
-output_dir = paste0("output",suffix)
-  
-dataset = "eval"
-#system("mkdir figures", ignore.stderr = T)
+# dataset = "eval"
 
-# datf_train = read.fireData(dataset = "train", dir=paste0(fire_dir, "/fire_aggregateData/",output_dir))
-# datf_eval = read.fireData(dataset = "eval", dir=paste0(fire_dir, "/fire_aggregateData/",output_dir))
-# datf_test = read.fireData(dataset = "test", dir=paste0(fire_dir, "/fire_aggregateData/",output_dir))
-
-datf = read.fireData_gfed(dataset = dataset, dir=paste0(fire_dir, "/",output_dir))
+datf = read.fireData_gfed(dataset = "eval", dir=paste0(fire_dir, "/",output_dir, "/", model_dir))
 
 #### calibration ####
 
@@ -75,7 +68,7 @@ plot_calib = function(datf, name, min=2e-4, max=2e-1, nscale = 200){
 
 
 
-setwd(paste0(fire_dir,"/output",suffix,"/figures" ))
+setwd(paste0(fire_dir,"/",output_dir,"/",model_dir,"/figures" ))
 
 
 pfts_ssaplus = c(0, 1, 6, 10, 2, 7, 9, 11)
@@ -90,14 +83,14 @@ dev.off()
 png(filename = "PFTwise_1.png", width = 300*6, height = 500*6, res=300)
 par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
 for (i in 1:4){
-  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale=50)  # X
+  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale=50, max = 1)  # X
 }
 dev.off()
 
 png(filename = "PFTwise_2.png", width = 300*6, height = 500*6, res=300)
 par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
 for (i in 5:8){
-  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale = 50)  # X
+  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale = 50, max = 1)  # X
 }
 dev.off()
 

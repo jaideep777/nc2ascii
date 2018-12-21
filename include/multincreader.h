@@ -73,7 +73,9 @@ class MultiNcReader{
 	map <string, ip_data> ip_data_map;		// ---
 	map <string, string> static_var_files; 	// 
 	map <string, int> static_var_nlevs; 	// 
+	map <string, string> static_var_interp; 	// 
 	map <string, string> mask_var_files; 	// 
+	map <string, string> mask_var_interp; 	// 
 
 	vector <gVar*> model_variables;			// using a vector here allows control over order of variables
 	map<string, gVar*> all_vars_map;			// using a map here allows quick searching of variables by name 

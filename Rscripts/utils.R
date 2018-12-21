@@ -64,12 +64,19 @@ addTrans <- function(color,trans)
   return(res)
 }
 
-NcCreateOneShot<- function(filename,var_name, glimits){
+NcCreateOneShot<- function(filename,var_name, glimits = numeric(0)){
   
-  lon0 = glimits[1]
-  lonf = glimits[2]
-  lat0 = glimits[3]
-  latf = glimits[4]
+  if(length(glimits) < 4){
+    lon0 = -180
+    lonf = 360
+    lat0 = -90
+    latf = 90
+  } else {
+    lon0 = glimits[1]
+    lonf = glimits[2]
+    lat0 = glimits[3]
+    latf = glimits[4]
+  }
   
   ncin<- nc_open(filename)
   fire_array<-ncvar_get(ncin,var_name)
@@ -91,11 +98,20 @@ NcCreateOneShot<- function(filename,var_name, glimits){
     } 
   }
   
-  ilon0 = which(lon<=lon0)[length(which(lon<=lon0))]
-  ilonf = which(lon>=lonf)[1]
-  ilat0 = which(lat<=lat0)[length(which(lat<=lat0))]
-  ilatf = which(lat>=latf)[1]
-  
+  # ilon0 = which(lon<=lon0)[length(which(lon<=lon0))]
+  # if (length(ilon0) == 0){ ilon0 = 0 }
+  # ilonf = which(lon>=lonf)[1]
+  # if (length(ilonf) == 0){ ilonf = length(lon) }
+  # ilat0 = which(lat<=lat0)[length(which(lat<=lat0))]
+  # if (length(ilat0) == 0){ ilat0 = 0 }
+  # ilatf = which(lat>=latf)[1]
+  # if (length(ilatf) == 0){ ilatf = length(lat) }
+
+  ilon0 = max(1, length(which(lon<=lon0)))
+  ilonf = length(which(lon<=lonf))
+  ilat0 = max(1, length(which(lat<=lat0)))
+  ilatf = length(which(lat<=latf))
+
   time<- ncvar_get(ncin,"time")
   tunits <- ncatt_get(ncin,"time","units")
   tustr <- strsplit(tunits$value, " ")
