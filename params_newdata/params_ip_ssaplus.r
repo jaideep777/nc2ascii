@@ -62,23 +62,23 @@ msk			bilinear 	 	  util_data/masks/surta_global_0.5_sl.nc
 timestep 	monthly
 start_date	2002-1-1
 start_time	0:0:0
-end_date	2015-12-31
+end_date	2006-12-31
 end_time	23:0:0	
 dt			24
 base_date	1950-1-1
 
 
 > MODEL_GRID
-lon0	-130
-lonf	175
-lat0	-35
-latf	35
+lon0	60.25
+lonf	99.75
+lat0	5.25
+latf	49.75
 dlat	0.5
 dlon	0.5
 
 
 > OUTPUT_FILE
-outfile 	output_globe/train_data.txt
+outfile 	train_data_from_globalfiles_cg.txt
 
 
 > END

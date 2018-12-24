@@ -2,7 +2,7 @@ rm(list = ls())
 #### PREDICTED FIRES - CALIBRATION ####
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_africa"
+output_dir = "output_globe"
 model_dir = "mod1_full"
 
 source(paste0(fire_dir,"/Rscripts/utils.R"))
@@ -71,28 +71,28 @@ plot_calib = function(datf, name, min=2e-4, max=2e-1, nscale = 200){
 setwd(paste0(fire_dir,"/",output_dir,"/",model_dir,"/figures" ))
 
 
-pfts_ssaplus = c(0, 1, 6, 10, 2, 7, 9, 11)
-pftnames_ssaplus = c("Barren", "NLE", "SCX", "AGR", "BLE", "MD", "GR", "MX")
-
-
 png(filename = "calib_all.png", width = 300*6, height = 500*6, res=300)
 par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
 plot_calib(datf, "ALL", nscale=100, min = 2e-4, max = 1)  # MIXED
 dev.off()
 
-png(filename = "PFTwise_1.png", width = 300*6, height = 500*6, res=300)
-par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
-for (i in 1:4){
-  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale=50, max = 1)  # X
-}
-dev.off()
-
-png(filename = "PFTwise_2.png", width = 300*6, height = 500*6, res=300)
-par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
-for (i in 5:8){
-  plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale = 50, max = 1)  # X
-}
-dev.off()
-
+# 
+# pfts_ssaplus = c(0, 1, 6, 10, 2, 7, 9, 11)
+# pftnames_ssaplus = c("Barren", "NLE", "SCX", "AGR", "BLE", "MD", "GR", "MX")
+# 
+# png(filename = "PFTwise_1.png", width = 300*6, height = 500*6, res=300)
+# par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
+# for (i in 1:4){
+#   plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale=50, max = 1)  # X
+# }
+# dev.off()
+# 
+# png(filename = "PFTwise_2.png", width = 300*6, height = 500*6, res=300)
+# par(mfrow = c(4,2), mar=c(5,7,4,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
+# for (i in 5:8){
+#   plot_calib(datf[datf$dft==pfts_ssaplus[i],], pftnames_ssaplus[i], nscale = 50, max = 1)  # X
+# }
+# dev.off()
+# 
 
 

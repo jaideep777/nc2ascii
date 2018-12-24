@@ -8,11 +8,11 @@ import sys
 
 
 
-output_dir = 'output_africa'
+output_dir = 'output_globe'
 
 __learn_rate = 0.005
 __batch_size = 5000
-__n_steps = 2500
+__n_steps = 4000
 
 n_classes = 25
 

@@ -1,13 +1,13 @@
 # makefile for fire model
 
 TARGET = nc2asc
-LIBPATH = -L/usr/local/netcdf-cxx-legacy/lib -L/home/jaideep/codes/Flare/lib -L/usr/local/cuda/lib64
-INCPATH = -I/usr/local/netcdf-c-4.3.2/include -I/usr/local/netcdf-cxx-legacy/include -I/usr/local/cuda/include
+LIBPATH = -L/home/jaideep/codes/Flare/lib -L/usr/local/cuda/lib64 -L/usr/local/netcdf-cxx4/lib
+INCPATH = -I/usr/local/netcdf-cxx4/include -I/usr/local/cuda/include -I/usr/local/netcdf-c/include 
 INCPATH += -I/home/jaideep/codes/Flare/include
 LDFLAGS =  
 CPPFLAGS = -g
 
-LIBS = -l:libflare.so.3 -lnetcdf_c++
+LIBS = -l:libflare.so.3 -lnetcdf_c++4
 
 SOURCEDIR = src
 BUILDDIR = build

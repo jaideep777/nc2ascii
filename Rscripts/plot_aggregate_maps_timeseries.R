@@ -3,14 +3,14 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_africa"
+output_dir = "output_globe"
 model_dir = "mod1_full"
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_0.5deg.1997-2016.nc"  # Need absolute path here
-fire_pred_file = "fire.2002-1-1-2006-12-31.nc"
+fire_pred_file = "fire.2002-1-1-2015-12-31.nc"
 
 start_date  = "2002-1-1"
-end_date    = "2006-11-30"
+end_date    = "2015-11-30"
 
 source(paste0(fire_dir, "/Rscripts/utils.R"))
 
@@ -45,6 +45,7 @@ mha_per_m2 = 0.0001/1e6
     fire_pred_filename = paste0(fire_dir,"/",output_dir, "/", model_dir, "/", fire_pred_file)
     fire_pred = NcCreateOneShot(filename = fire_pred_filename, var_name = "fire")
     fire_pred$time = fire_pred$time - 15
+    fire_pred$time = as.Date("2002-1-15") + 365.2524/12*(0:167)
     fire_pred = NcClipTime(fire_pred, start_date, end_date)
     fire_pred$data = fire_pred$data - 0.0004
     fire_pred$data[fire_pred$data < 0.00] = 0
@@ -98,13 +99,13 @@ mha_per_m2 = 0.0001/1e6
     # cols = createPalette(c("black", "black", "black","blue","mediumspringgreen","yellow","orange", "red","brown"),c(0,0.2,0.5,1,2,5,10,20,50,100)*1000, n = 1000)
     cols = createPalette(c("black", "blue4", "blue", "skyblue", "cyan","mediumspringgreen","yellow","orange", "red","brown"),c(0,0.2,0.5,1,2,5,10,20,50,100)*1000, n = 1000) #gfed 
     
-    png(filename = paste0("figures/all_seasons", "(",model,")_testDataset.png"),res = 300,width = 600*3,height = 520*3) # 520 for sasplus, india, 460 for SAS 
+    png(filename = paste0("figures/all_seasons", "(","full",")_testDataset.png"),res = 300,width = 844*3,height = 800*3) # 520 for sasplus, india, 460 for SAS 
     layout(matrix(c(1,1,
-                    1,1,
-                    2,3,
-                    2,3,
-                    2,3), ncol=2,byrow = T))  # vertical
-    par(mar=c(4,5,3,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
+                    2,2,
+                    # 3,3,
+                    # 2,3,
+                    3,3), ncol=2,byrow = T))  # vertical
+    par(mar=c(4,5,4,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
     
     plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area")
     points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
@@ -133,7 +134,7 @@ mha_per_m2 = 0.0001/1e6
     mtext(text = "All seasons",side = 3,line = 1,outer = T)
     dev.off()
     
-    cat(model, "\t", spacor, "\t", tmpcor, "\t", tmpcor_yoy, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n")
+    cat("full", "\t", spacor, "\t", tmpcor, "\t", tmpcor_yoy, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n")
 #   }
 #   cat("\n\n\n")
 # }	

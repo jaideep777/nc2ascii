@@ -128,12 +128,12 @@ int main_run(MultiNcReader &R){
 		
 		double t = R.nc_read_frame(istep);
 		
-		string fname = "pr_" + int2str(istep) + ".nc";
-		R.getVar("pr").writeOneShot(fname);
-
-		string fname1 = "gfed_" + int2str(istep) + ".nc";
-		R.getVar("gfed").writeOneShot(fname1);
-
+		if (istep == 0){
+			for (int i=0; i<R.vars.size(); ++i){
+				string fname = R.vars[i].varname + int2str(istep) + ".nc";
+				R.vars[i].writeOneShot(fname);
+			}
+		}		
 
 		if (train) R.ascii_write_frame(t);
 		if (eval) write_eval(R);
@@ -151,7 +151,7 @@ int main(int argc, char ** argv){
 
 	// ~~~~~~ Essentials ~~~~~~~~
 	// set NETCDF error behavior to non-fatal
-	NcError err(NcError::silent_nonfatal);
+	//NcError err(NcError::silent_nonfatal);
 	
 	// speficy log file for gsm
 	ofstream gsml("output/gsm_log.txt");

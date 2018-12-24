@@ -1,13 +1,7 @@
 # Simulation name ("" or "india" or "ssaplus" etc)
 
-sim_name           <- "africa"
-
-fire_dir = "~/codes/PureNN_fire"
-
-#### Init ####
-suffix = ""
-if (sim_name != "") suffix = paste0(suffix,"_",sim_name)
-output_dir = paste0("output",suffix)
+fire_dir    = "~/codes/PureNN_fire"
+output_dir  = "output_globe"
 
 source(paste0(fire_dir,"/Rscripts/utils.R"))
 
@@ -34,7 +28,7 @@ datf = dat_good
 
 xlim = c(min(datf$lon),max(datf$lon))
 ylim = c(min(datf$lat),max(datf$lat))
-ptsiz = 9  # 12 for india
+ptsiz = 10  # 12 for india
 
 # png(paste0(fire_dir, "/fire_aggregateData/output",suffix,"/lmois.png"), width = 400, height = 500)
 # par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
@@ -42,14 +36,14 @@ ptsiz = 9  # 12 for india
 #       plot.colormap(X=lon, Y=lat, Z = lmois, zlim = c(-0.01,1.01), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
 # )
 # dev.off()
-png(paste0(fire_dir, "/output",suffix,"/dft.png"), width = 400, height = 500)
+png(paste0(fire_dir, "/",output_dir,"/dft.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
 with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
-      plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,11), col = rainbow(12), cex = ptsiz, xlim = xlim, ylim = ylim)
+      plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,12), col = rainbow(13), cex = ptsiz, xlim = xlim, ylim = ylim)
 )
 dev.off()
 
-png(paste0(fire_dir, "/output",suffix,"/logpop.png"), width = 400, height = 500)
+png(paste0(fire_dir, "/",output_dir,"/logpop.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
 with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
       plot.colormap(X=lon, Y=lat, Z = pop, zlim = c(-0.01,11), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
@@ -72,12 +66,12 @@ ids = sample(c(pos, neg_sub), size = length(c(pos, neg_sub)), replace = F) # shu
 
 datf = datf[ids,]
 
-png(paste0(fire_dir, "/output",suffix,"/dft_datf.png"), width = 400, height = 500)
-par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
-with( datf[as.Date(dat_good$date) >= as.Date("2006-1-1") & as.Date(dat_good$date) <= as.Date("2006-12-31"),],
-      plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,12), col = rainbow(13), cex = ptsiz, xlim = xlim, ylim = ylim)
-)
-dev.off()
+# png(paste0(fire_dir, "/output",suffix,"/dft_datf.png"), width = 400, height = 500)
+# par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
+# with( datf[as.Date(dat_good$date) >= as.Date("2006-1-1") & as.Date(dat_good$date) <= as.Date("2006-12-31"),],
+#       plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,12), col = rainbow(13), cex = ptsiz, xlim = xlim, ylim = ylim)
+# )
+# dev.off()
 
 plot.cut.means_obs = function(obs, var, min, max, col.obs, col.pred, ...){
   brks = seq(min,max, length.out=21)
@@ -90,7 +84,8 @@ plot.cut.means_obs = function(obs, var, min, max, col.obs, col.pred, ...){
 }
 
 
-ids_test = which(as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31"))
+ids_test = which( (as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31")) |
+                   datf$lon < -25) 
 # ids_test = which(datf$date >= as.Date("2013-1-1"))
 
 dat_test = datf[ids_test,]
