@@ -5,19 +5,29 @@ output_dir  = "output_globe"
 
 source(paste0(fire_dir,"/Rscripts/utils.R"))
 
+clamp = function(x, a,b){
+  min(max(x,a),b)  
+}
+
 # clean up aggregated data in R and select forest grids only
 datm = read.delim(paste0(fire_dir, "/",output_dir,"/train_data.txt"), header=T)
 datm = datm[,-length(datm)]
-datm[datm == 9.9e20] = NA
+datm[datm > 1e19] = NA
 # ba_classes = c(0,2^(seq(log2(2^0), log2(2^10), length.out=11)))/1024
 ba_classes = c(0, seq(-6,0,by=0.25))
 datm$gfedclass = sapply(log10(datm$gfed),FUN = function(x){length(which(x>ba_classes))})
 
 datm$pop = log(1+datm$pop)
 datm$prev_ba = log(1e-5+datm$prev_ba)
-datm$pr = log(1e-3+datm$pr)
-datm$npp = log(1e-3+datm$npp)
+# datm$pr = log(1+datm$pr)
+datm$npp = log(1+datm$npp)
 
+# datm$rd_tot = log(1+datm$rd_tot)
+# datm$rd_tp1 = log(1+datm$rd_tp1)
+# datm$rd_tp2 = log(1+datm$rd_tp2)
+datm$rd_tp3 = log(1+datm$rd_tp3)
+datm$rd_tp4 = log(1+datm$rd_tp4)
+# datm$rd_tp5 = log(1+datm$rd_tp5)
 
 threshold_forest_frac = 0.3
 
@@ -28,7 +38,7 @@ datf = dat_good
 
 xlim = c(min(datf$lon),max(datf$lon))
 ylim = c(min(datf$lat),max(datf$lat))
-ptsiz = 10  # 12 for india
+ptsiz = 15  # 12 for india
 
 # png(paste0(fire_dir, "/fire_aggregateData/output",suffix,"/lmois.png"), width = 400, height = 500)
 # par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
@@ -49,6 +59,14 @@ with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
       plot.colormap(X=lon, Y=lat, Z = pop, zlim = c(-0.01,11), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
 )
 dev.off()
+
+png(paste0(fire_dir, "/",output_dir,"/rd_tp3.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
+par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
+with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
+      plot.colormap(X=lon, Y=lat, Z = rd_tp3, zlim = c(-0.01,9), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
+)
+dev.off()
+
 
 # png(paste0(fire_dir, "/fire_aggregateData/output",suffix,"/dxl.png"), width = 400, height = 500)
 # par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
@@ -84,8 +102,9 @@ plot.cut.means_obs = function(obs, var, min, max, col.obs, col.pred, ...){
 }
 
 
-ids_test = which( (as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31")) |
-                   datf$lon < -25) 
+ids_test = which( (as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31")) )
+                   # | datf$lon < -25)
+# ids_test = which( (as.Date(datf$date) >= as.Date("2008-1-1") & as.Date(datf$date) <= as.Date("2011-12-31")) )
 # ids_test = which(datf$date >= as.Date("2013-1-1"))
 
 dat_test = datf[ids_test,]
@@ -123,4 +142,4 @@ write.csv(x = dat_train, file=paste0(fire_dir, "/",output_dir,"/train_forest.csv
 write.csv(x = dat_eval, file=paste0(fire_dir, "/",output_dir,"/eval_forest.csv"), row.names = F)
 write.csv(x = dat_test, file=paste0(fire_dir, "/",output_dir,"/test_forest.csv"), row.names = F)
 
-
+write(x = paste0("ID_", colnames(dat_train), " = ", 1:length(dat_train)-1), file=paste0(fire_dir, "/",output_dir,"/variables.txt"), ncolumns = 1)

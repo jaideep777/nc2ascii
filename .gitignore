@@ -14,4 +14,5 @@ lib
 nc2asc
 
 output*
-
+x_output*
+z_output*

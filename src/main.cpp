@@ -82,19 +82,25 @@ void write_eval(MultiNcReader &R){
 //				}
 //			}
 			
+			x.push_back(R.getVar("cru_ts")(ilon, ilat, 0));
+//			x.push_back(log(1+R.getVar("pop")(ilon, ilat, 0)));
+//			x.push_back(log(1+R.getVar("rd_tp3")(ilon, ilat, 0)));
+			x.push_back(log(1+R.getVar("rd_tp4")(ilon, ilat, 0)));
+			x.push_back(R.getVar("cld")(ilon, ilat, 0));
+//			x.push_back(R.getVar("ndr")(ilon, ilat, 0));
+
 			x.push_back(R.getVar("rh")(ilon, ilat, 0));
-			x.push_back(R.getVar("ts")(ilon, ilat, 0));
-			x.push_back(R.getVar("prev_npp")(ilon, ilat, 0));
-			x.push_back(R.getVar("prev_pr")(ilon, ilat, 0));
-			x.push_back(log(1e-5+R.getVar("prev_ba")(ilon, ilat, 0)));
-			x.push_back(log(1e-3+R.getVar("pr")(ilon, ilat, 0)));
-			x.push_back(log(1e-3+R.getVar("npp")(ilon, ilat, 0)));
+//			x.push_back(log(1+R.getVar("pr")(ilon, ilat, 0)));
+//			x.push_back(R.getVar("prev_pr")(ilon, ilat, 0));
+//			x.push_back(R.getVar("prev_npp")(ilon, ilat, 0));
+//			x.push_back(log(1e-5+R.getVar("prev_ba")(ilon, ilat, 0)));
+//			x.push_back(log(1+R.getVar("npp")(ilon, ilat, 0)));
+
 //			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
 
 			for (int ilev=1; ilev<R.getVar("ftmap").nlevs; ++ilev)
 				x.push_back(R.getVar("ftmap")(ilon, ilat, ilev));
 
-			x.push_back(log(1+R.getVar("pop")(ilon, ilat, 0)));
 
 //			for (int i=0; i< x.size(); ++i) cout << x[i] << " ";
 //			cout << endl;
@@ -132,6 +138,11 @@ int main_run(MultiNcReader &R){
 			for (int i=0; i<R.vars.size(); ++i){
 				string fname = R.vars[i].varname + int2str(istep) + ".nc";
 				R.vars[i].writeOneShot(fname);
+			}
+
+			for (int i=0; i<R.static_vars.size(); ++i){
+				string fname = R.static_vars[i].varname + int2str(istep) + ".nc";
+				R.static_vars[i].writeOneShot(fname);
 			}
 		}		
 

@@ -31,7 +31,7 @@ cru_ts	 degC		cru_ts4.02.tmp		1901		2017		117			1		linear			 coarsegrain
 # cru_tmx	 degC		cru_ts4.02.tmx		1901		2017		117			1		linear			 coarsegrain
 rh		 %			rhum.sig995			2000		2015		1			1		linear			 bilinear
 # wsp		 m/s		wsp.sig995			2000		2015		1			1		linear			 bilinear
-# pr		 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 coarsegrain
+pr		 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 coarsegrain
 # ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	 bilinear
 npp		 gC/m2/s	npp					2000		2015		16			1		linear			 bilinear
 # ffev	 f/day		fire_events			2000		2015		1			1		linear			 bilinear
@@ -40,8 +40,8 @@ gfed	 %			GFED_4.1s			1997 		2016		20			1		linear			 coarsegrain
 cld		 -			MODAL2_M_CLD_FR		2001		2018		1			1		linear			 coarsegrain
 prev_ba	 %			GFED_4.1s			1997 		2016		20			1		prev_yearly		 coarsegrain
 prev_npp gC/m2/s	npp					2000		2015		16			1		prev_yearly		 bilinear
-# prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 coarsegrain		
-prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
+prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 coarsegrain		
+# prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
 
 # file name will be taken as "prefix.yyyy.nc" or "prefix.yyyy-yyyy.nc"
 # value types: ins (instantaneous), sum, avg (not used as of now)
@@ -54,7 +54,7 @@ prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
 # var	|	nlevs | interp			| file 
 ftmap 		12 		coarsegrain		  forest_type/MODIS/ftmap_modis_global_0.25deg_12levs.nc
 # elev		1		bilinear		  util_data/elevation/elev.0.5-deg.nc
-dft			1		bilinear		  forest_type/MODIS/dft_MODIS_global_12lev_agri-bar_lt0.5_1deg.nc
+dft			1		bilinear		  forest_type/MODIS/dft_MODIS_global_12lev_agri-bar_lt0.5_0.5deg.nc
 pop			1		coarsegrain		  World_population_density/GHS_POP_GPW42000_GLOBE_R2015A_54009_1k_v1_0/GHS_pop_GPW42000_reprojected_Globe.nc    
 # rd_tot	 	1 		coarsegrain		  Global_road_density/GRIP4_density_total/grip4_total_dens_m_km2.nc		
 # rd_tp1	 	1 		coarsegrain		  Global_road_density/GRIP4_density_tp1/grip4_tp1_dens_m_km2.nc		
@@ -62,11 +62,10 @@ pop			1		coarsegrain		  World_population_density/GHS_POP_GPW42000_GLOBE_R2015A_5
 rd_tp3	 	1 		coarsegrain		  Global_road_density/GRIP4_density_tp3/grip4_tp3_dens_m_km2.nc		
 rd_tp4	 	1 		coarsegrain		  Global_road_density/GRIP4_density_tp4/grip4_tp4_dens_m_km2.nc		
 # rd_tp5	 	1 		coarsegrain		  Global_road_density/GRIP4_density_tp5/grip4_tp5_dens_m_km2.nc		
-region		1		bilinear		  Fire_BA_GFED4.1s/ancil/basis_regions.nc
 
 > MASKS
 # var	|	interp 			| file 
-ftmask		bilinear 	  	  forest_type/MODIS/ftmask_MODIS_global_1deg.nc
+ftmask		bilinear 	  	  forest_type/MODIS/ftmask_MODIS_global_0.5deg.nc
 msk			bilinear 	 	  util_data/masks/surta_global_0.5_sl.nc
 
 
@@ -81,16 +80,16 @@ base_date	1950-1-1
 
 
 > MODEL_GRID
-lon0	-179.5
-lonf	179.5
-lat0	-89.5
-latf	89.5
-dlat	1
-dlon	1
+lon0	-130
+lonf	175
+lat0	-35
+latf	35
+dlat	0.5
+dlon	0.5
 
 
 > OUTPUT_FILE
-outfile 	output_globe/train_data.txt
+outfile 	output_globe_0.5deg_final/train_data.txt
 
 
 > END

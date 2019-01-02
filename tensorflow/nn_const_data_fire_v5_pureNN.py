@@ -12,32 +12,54 @@ output_dir = 'output_globe'
 
 __learn_rate = 0.005
 __batch_size = 5000
-__n_steps = 4000
+__n_steps = 3000
 
 n_classes = 25
 
 nn_h1 = 12
 
-ID_cld 		= 4
-ID_ndr 		= 6
-ID_npp 		= 7
-ID_pr 		= 8
-ID_prevba	= 9
-ID_prevnpp	= 10
-ID_prevpr	= 11
-ID_rh 		= 12
-ID_ts 		= 13
-ID_wsp 		= 14
-ID_elev 	= 16
-ID_ft		= range(18,29)
-ID_pop		= 29
+ID_date = 0
+ID_time = 1
+ID_lat = 2
+ID_lon = 3
+ID_cld = 4
+ID_cru_ts = 5
+ID_gfed = 6
+ID_npp = 7
+ID_prev_ba = 8
+ID_prev_cld = 9
+ID_prev_npp = 10
+ID_rh = 11
+ID_dft = 12
+ID_ftmap0 = 13
+ID_ftmap1 = 14
+ID_ftmap2 = 15
+ID_ftmap3 = 16
+ID_ftmap4 = 17
+ID_ftmap5 = 18
+ID_ftmap6 = 19
+ID_ftmap7 = 20
+ID_ftmap8 = 21
+ID_ftmap9 = 22
+ID_ftmap10 = 23
+ID_ftmap11 = 24
+ID_pop = 25
+ID_rd_tp3 = 26
+ID_rd_tp4 = 27
+ID_region = 28
+ID_ftmask = 29
+ID_msk = 30
+ID_gfedclass = 31
 
-ID_gfed		= 32 # 30 for gfed4
 
+
+ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
 #X_ids = [ID_rh, ID_ts,  ID_wsp,  ID_dxl ,  ID_lmois, ID_pop, ID_agf]
-X_ids = [ID_rh, ID_ts, ID_prevnpp, ID_prevpr, ID_prevba, ID_pr, ID_npp ] + ID_ft + [ID_pop] 
+X_ids = [ID_cru_ts, ID_rd_tp4, ID_cld, ID_rh] + ID_ft 
 n_inputs = len(X_ids)
+
+Y_id = ID_gfedclass
 	
 # functions to initialize weights and biases
 def weight_variable(shape):
@@ -85,10 +107,10 @@ print("DONE")
 np.set_printoptions(precision=3, suppress=True)
 print("--------------")
 print("Input: (head) | y");
-print(my_data[0:5, X_ids+[ID_gfed]])
+print(my_data[0:5, X_ids+[Y_id]])
 print("--------------")
 print("Output: (head)");
-print(tf.Session().run(tf.one_hot(my_data[0:5,ID_gfed], depth=n_classes, dtype=tf.int32)))
+print(tf.Session().run(tf.one_hot(my_data[0:5,Y_id], depth=n_classes, dtype=tf.int32)))
 print("--------------")
 
 Xmeans = np.mean(my_data[:,X_ids], axis=0)
@@ -99,11 +121,11 @@ print("--------------")
 
 print("Reading evalutation data...")
 eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
-print(eval_data[0:5, X_ids+[ID_gfed]])
+print(eval_data[0:5, X_ids+[Y_id]])
 
 print("Reading test data...")
 test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
-print(test_data[0:5, X_ids+[ID_gfed]])
+print(test_data[0:5, X_ids+[Y_id]])
 print("--------------")
 
 
@@ -117,7 +139,7 @@ print(bi)
 #### TENSORFLOW GRAPH BUILDING STARTS HERE ### 
 
 xin = tf.matmul(tf.cast(my_data[:,X_ids], tf.float32), Wi) - bi
-yin = tf.one_hot(my_data[:,ID_gfed], depth=n_classes, dtype=tf.int32)
+yin = tf.one_hot(my_data[:,Y_id], depth=n_classes, dtype=tf.int32)
 
 print("Scaled inputs:")
 print(tf.Session().run(xin[0:5,:]))
@@ -125,10 +147,10 @@ print(tf.Session().run(yin[0:5,:]))
 print("--------------")
 
 xeval = tf.matmul(tf.cast(eval_data[:,X_ids], tf.float32), Wi) - bi
-yeval = tf.one_hot(eval_data[:,ID_gfed], depth=n_classes, dtype=tf.int32)
+yeval = tf.one_hot(eval_data[:,Y_id], depth=n_classes, dtype=tf.int32)
 
 xtest = tf.matmul(tf.cast(test_data[:,X_ids], tf.float32), Wi) - bi
-ytest = tf.one_hot(test_data[:,ID_gfed], depth=n_classes, dtype=tf.int32)
+ytest = tf.one_hot(test_data[:,Y_id], depth=n_classes, dtype=tf.int32)
 
 print("Scaled test data:")
 print(tf.Session().run(xtest[0:5,:]))
@@ -137,7 +159,7 @@ print("--------------")
 
 dat_train = tf.data.Dataset.from_tensor_slices((xin,yin))
 dat_train = dat_train.repeat(10000)
-dat_train = dat_train.shuffle(100000)
+dat_train = dat_train.shuffle(1000000)
 dat_train = dat_train.batch(__batch_size)
 
 #dat_valid = tf.data.Dataset.from_tensor_slices((xeval,yeval))

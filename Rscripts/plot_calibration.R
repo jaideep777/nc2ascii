@@ -2,8 +2,8 @@ rm(list = ls())
 #### PREDICTED FIRES - CALIBRATION ####
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe"
-model_dir = "mod1_full"
+output_dir = "output_globe2"
+model_dir = "mod2_noprevba"
 
 source(paste0(fire_dir,"/Rscripts/utils.R"))
 

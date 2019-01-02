@@ -1,12 +1,13 @@
 #!/bin/bash
 
+OUTPUT_DIR=output_globe
 PATH_BAK=$PATH
 export PATH=$PATH:/home/jaideep/anaconda2/bin
 . activate tensorflow
 python nn_const_data_fire_v5_pureNN.py
 . deactivate
-sed -i -e "s/\\[/ /g" ../output_globe/weights_ba.txt
-sed -i -e "s/\\]/ /g" ../output_globe/weights_ba.txt
-sed -i -e "s/\\,/ /g" ../output_globe/weights_ba.txt
+sed -i -e "s/\\[/ /g" ../$OUTPUT_DIR/weights_ba.txt
+sed -i -e "s/\\]/ /g" ../$OUTPUT_DIR/weights_ba.txt
+sed -i -e "s/\\,/ /g" ../$OUTPUT_DIR/weights_ba.txt
 PATH=$PATH_BAK
 
