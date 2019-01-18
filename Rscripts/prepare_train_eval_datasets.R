@@ -12,6 +12,8 @@ clamp = function(x, a,b){
 # clean up aggregated data in R and select forest grids only
 datm = read.delim(paste0(fire_dir, "/",output_dir,"/train_data.txt"), header=T)
 datm = datm[,-length(datm)]
+datm$pr = NULL
+datm$prev_pr = NULL
 datm[datm > 1e19] = NA
 # ba_classes = c(0,2^(seq(log2(2^0), log2(2^10), length.out=11)))/1024
 ba_classes = c(0, seq(-6,0,by=0.25))
@@ -28,6 +30,8 @@ datm$npp = log(1+datm$npp)
 datm$rd_tp3 = log(1+datm$rd_tp3)
 datm$rd_tp4 = log(1+datm$rd_tp4)
 # datm$rd_tp5 = log(1+datm$rd_tp5)
+
+# cru_rh =  datm$cru_vp*100 / (610.78 * exp( datm$cru_ts / ( datm$cru_ts + 238.3 ) * 17.2694 ))
 
 threshold_forest_frac = 0.3
 

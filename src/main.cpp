@@ -10,6 +10,22 @@ float ba_classes_mids[] = {
 	         0.0, 1.333521e-06, 2.371374e-06, 4.216965e-06, 7.498942e-06, 1.333521e-05, 2.371374e-05, 4.216965e-05, 7.498942e-05, 1.333521e-04, 2.371374e-04,
 	4.216965e-04, 7.498942e-04, 1.333521e-03, 2.371374e-03, 4.216965e-03, 7.498942e-03, 1.333521e-02, 2.371374e-02, 4.216965e-02, 7.498942e-02, 1.333521e-01,
 	2.371374e-01, 4.216965e-01, 7.498942e-01};
+
+string regions_names[] = {"BONA (Boreal North America)",				// 1
+				          "TENA (Temperate North America)",				// 2
+				          "CEAM (Central America)",						// 3
+				          "NHSA (Northern Hemisphere South America)",	// 4
+				          "SHSA (Southern Hemisphere South America)",	// 5
+				          "EURO (Europe)",								// 6
+				          "MIDE (Middle East)",							// 7
+				          "NHAF (Northern Hemisphere Africa)",			// 8
+				          "SHAF (Southern Hemisphere Africa)",			// 9
+				          "BOAS (Boreal Asia)",							// 10
+				          "CEAS (Central Asia)",						// 11
+				          "SEAS (Southeast Asia)",						// 12
+				          "EQAS (Equatorial Asia)",						// 13
+				          "AUST (Australia and New Zealand)"};			// 14
+
 	
 bool train, eval;
 
@@ -70,33 +86,45 @@ void write_eval(MultiNcReader &R){
 	
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
-			
+		
+		int region = R.getVar("region")(ilon, ilat, 0);
+		if (region != 8 && region != 9) continue;
+		
 		if (! R.ismasked(ilon,ilat)){ 
 			float ba_pred = 0;
 			vector <float> x;
-//			for (int i=0; i<R.vars.size(); ++i){
-//				for (int ilev=0; ilev<R.vars[i].nlevs; ++ilev)
-//				if (R.vars[i].varname != "gfed" && R.vars[i].varname != "dft") {
-//					
-//					x.push_back(R.vars[i](ilon, ilat, ilev));
-//				}
-//			}
 			
-			x.push_back(R.getVar("cru_ts")(ilon, ilat, 0));
-//			x.push_back(log(1+R.getVar("pop")(ilon, ilat, 0)));
-//			x.push_back(log(1+R.getVar("rd_tp3")(ilon, ilat, 0)));
-			x.push_back(log(1+R.getVar("rd_tp4")(ilon, ilat, 0)));
-			x.push_back(R.getVar("cld")(ilon, ilat, 0));
-//			x.push_back(R.getVar("ndr")(ilon, ilat, 0));
+			ifstream fin("nn_vars.txt");
+			string var;
+			while (fin >> var){
+				float val = R.getVar(var)(ilon, ilat, 0);
 
-			x.push_back(R.getVar("rh")(ilon, ilat, 0));
-//			x.push_back(log(1+R.getVar("pr")(ilon, ilat, 0)));
-//			x.push_back(R.getVar("prev_pr")(ilon, ilat, 0));
+				if (var == "rd_tp3")  val = log(val + 1);
+				if (var == "rd_tp4")  val = log(val + 1);
+				if (var == "pop")     val = log(val + 1);
+				if (var == "npp")     val = log(val + 1);
+				if (var == "pr")      val = log(val + 1);
+				if (var == "prev_ba") val = log(val + 1e-5);
+
+				x.push_back(val);
+			}
+
+		
+//			x.push_back(R.getVar("cru_ts")(ilon, ilat, 0));
+////			x.push_back(log(1+R.getVar("rd_tp3")(ilon, ilat, 0)));
+//			x.push_back((R.getVar("rd_tp4")(ilon, ilat, 0)));
+//			x.push_back(R.getVar("cld")(ilon, ilat, 0));
+////			x.push_back(R.getVar("ndr")(ilon, ilat, 0));
+
+//			x.push_back(R.getVar("cru_vp")(ilon, ilat, 0));
+//			x.push_back((R.getVar("pop")(ilon, ilat, 0)));
+////			x.push_back(log(1+R.getVar("pr")(ilon, ilat, 0)));
+////			x.push_back(R.getVar("prev_pr")(ilon, ilat, 0));
 //			x.push_back(R.getVar("prev_npp")(ilon, ilat, 0));
-//			x.push_back(log(1e-5+R.getVar("prev_ba")(ilon, ilat, 0)));
-//			x.push_back(log(1+R.getVar("npp")(ilon, ilat, 0)));
+////			x.push_back(log(1e-5+R.getVar("prev_ba")(ilon, ilat, 0)));
+////			x.push_back(log(1+R.getVar("npp")(ilon, ilat, 0)));
 
-//			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
+////			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
 
 			for (int ilev=1; ilev<R.getVar("ftmap").nlevs; ++ilev)
 				x.push_back(R.getVar("ftmap")(ilon, ilat, ilev));
@@ -111,6 +139,9 @@ void write_eval(MultiNcReader &R){
 			for (int i=0; i<Y.m*Y.n; ++i) ba_pred += ba_classes_mids[i]*Y.data[i];
 			fire(ilon, ilat, 0) = ba_pred; //exp(nfires/6.7)-1;
 
+		}
+		else{
+			fire(ilon, ilat, 0) = fire.missing_value; //exp(nfires/6.7)-1;
 		}
 
 	}

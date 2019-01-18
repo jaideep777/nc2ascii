@@ -1,13 +1,22 @@
 #!/bin/bash
 
-OUTPUT_DIR=output_globe
+# Output folder where weights file is saved is eiher pulled from ./run_components.sh 
+# OR set via commandline if this script is run directly
+if [[ -v FOLDER ]]; then
+	echo pulling FOLDER from calling script: $FOLDER
+else
+	FOLDER=$1	# take from commandline if not set
+fi
+
 PATH_BAK=$PATH
 export PATH=$PATH:/home/jaideep/anaconda2/bin
 . activate tensorflow
-python nn_const_data_fire_v5_pureNN.py
+python nn_const_data_fire_v5_pureNN.py -d $FOLDER
 . deactivate
-sed -i -e "s/\\[/ /g" ../$OUTPUT_DIR/weights_ba.txt
-sed -i -e "s/\\]/ /g" ../$OUTPUT_DIR/weights_ba.txt
-sed -i -e "s/\\,/ /g" ../$OUTPUT_DIR/weights_ba.txt
+sed -i -e "s/\\[/ /g" ../$FOLDER/weights_ba.txt
+sed -i -e "s/\\]/ /g" ../$FOLDER/weights_ba.txt
+sed -i -e "s/\\,/ /g" ../$FOLDER/weights_ba.txt
 PATH=$PATH_BAK
+
+
 

@@ -90,6 +90,7 @@ class MultiNcReader{
 	MultiNcReader(string file);
 	
 	gVar& getVar(string s);
+	bool hasVar(string s);
 	
 	int read_params_file();
 	int create_sim_config();

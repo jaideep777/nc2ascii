@@ -257,6 +257,11 @@ gVar& MultiNcReader::getVar(string s){
 	return *all_vars_map[s];
 }
 
+bool MultiNcReader::hasVar(string s){
+	return (all_vars_map.find(s) != all_vars_map.end());
+}
+
+
 ///*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	--> init_vars()
 //	

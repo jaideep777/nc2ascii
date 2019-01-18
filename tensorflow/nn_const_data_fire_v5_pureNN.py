@@ -5,10 +5,30 @@ import tensorflow as tf
 import numpy as np
 from numpy import genfromtxt
 import sys
+import argparse
+
+#string regions_names[] = {"BONA (Boreal North America)",				// 1
+#				          "TENA (Temperate North America)",				// 2
+#				          "CEAM (Central America)",						// 3
+#				          "NHSA (Northern Hemisphere South America)",	// 4
+#				          "SHSA (Southern Hemisphere South America)",	// 5
+#				          "EURO (Europe)",								// 6
+#				          "MIDE (Middle East)",							// 7
+#				          "NHAF (Northern Hemisphere Africa)",			// 8
+#				          "SHAF (Southern Hemisphere Africa)",			// 9
+#				          "BOAS (Boreal Asia)",							// 10
+#				          "CEAS (Central Asia)",						// 11
+#				          "SEAS (Southeast Asia)",						// 12
+#				          "EQAS (Equatorial Asia)",						// 13
+#				          "AUST (Australia and New Zealand)"};			// 14
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", action="store", dest="output_dir", default="output")
+result = parser.parse_args()
 
-output_dir = 'output_globe'
+output_dir = result.output_dir  #'output_globe'
+print("output_dir = ", output_dir)
 
 __learn_rate = 0.005
 __batch_size = 5000
@@ -18,45 +38,15 @@ n_classes = 25
 
 nn_h1 = 12
 
-ID_date = 0
-ID_time = 1
-ID_lat = 2
-ID_lon = 3
-ID_cld = 4
-ID_cru_ts = 5
-ID_gfed = 6
-ID_npp = 7
-ID_prev_ba = 8
-ID_prev_cld = 9
-ID_prev_npp = 10
-ID_rh = 11
-ID_dft = 12
-ID_ftmap0 = 13
-ID_ftmap1 = 14
-ID_ftmap2 = 15
-ID_ftmap3 = 16
-ID_ftmap4 = 17
-ID_ftmap5 = 18
-ID_ftmap6 = 19
-ID_ftmap7 = 20
-ID_ftmap8 = 21
-ID_ftmap9 = 22
-ID_ftmap10 = 23
-ID_ftmap11 = 24
-ID_pop = 25
-ID_rd_tp3 = 26
-ID_rd_tp4 = 27
-ID_region = 28
-ID_ftmask = 29
-ID_msk = 30
-ID_gfedclass = 31
-
+import sys
+sys.path.insert(0, '../'+output_dir)
+from variables import *	# Import variable IDs as in training data csv
 
 
 ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
-#X_ids = [ID_rh, ID_ts,  ID_wsp,  ID_dxl ,  ID_lmois, ID_pop, ID_agf]
-X_ids = [ID_cru_ts, ID_rd_tp4, ID_cld, ID_rh] + ID_ft 
+X_ids = [ID_cru_ts] + ID_ft
+
 n_inputs = len(X_ids)
 
 Y_id = ID_gfedclass
@@ -103,6 +93,7 @@ def denseNet(x, W1,b1,Wo,bo):
 
 print("Reading training data...")
 my_data = genfromtxt('../'+output_dir+'/train_forest.csv', delimiter=',',skip_header=1)
+my_data = my_data[(my_data[:,ID_region] == 8) | (my_data[:,ID_region] == 9)]  # Region selection
 print("DONE")
 np.set_printoptions(precision=3, suppress=True)
 print("--------------")
@@ -121,10 +112,12 @@ print("--------------")
 
 print("Reading evalutation data...")
 eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
+eval_data = eval_data[(eval_data[:,ID_region] == 8) | (eval_data[:,ID_region] == 9)]  # Region selection
 print(eval_data[0:5, X_ids+[Y_id]])
 
 print("Reading test data...")
 test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
+test_data = test_data[(test_data[:,ID_region] == 8) | (test_data[:,ID_region] == 9)]  # Region selection
 print(test_data[0:5, X_ids+[Y_id]])
 print("--------------")
 

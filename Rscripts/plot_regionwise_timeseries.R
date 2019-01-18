@@ -4,7 +4,7 @@ library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
 output_dir = "output_globe"
-model_dir = "mod4_cruts_rd4_cld_rh"
+model_dir = "mod4_cruts_rd4_cld_cruvp_pop"
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
 fire_pred_file = "fire.2003-1-1-2015-12-31.nc"
