@@ -6,6 +6,9 @@
 *.txt
 *.dat
 *.gz
+*.odt
+*.xls
+*.xlsx
 
 build
 lib

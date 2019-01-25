@@ -3,14 +3,16 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output"
-model_dir = "mod1"
+output_dir = "output_globe"
+model_dir = "mod3_cruts_rd4_cld_rh_pop"
+
+# for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
 fire_pred_file = "fire.2003-1-1-2015-12-31.nc"
 
 start_date  = "2003-1-1"
-end_date    = "2015-11-30"
+end_date    = "2014-12-31"
 
 # Get model_dir from command line
 args = commandArgs(trailingOnly = T)
@@ -26,8 +28,8 @@ if (findOpt("model_dir")) model_dir = spec[opt=="model_dir"]
 if (findOpt("output_dir")) output_dir = spec[opt=="output_dir"]
 
 
-cat("model_dir = ", model_dir, "\n")
-cat("output_dir = ", output_dir, "\n")
+# cat("model_dir = ", model_dir, "\n")
+# cat("output_dir = ", output_dir, "\n")
 
 source(paste0(fire_dir, "/Rscripts/utils.R"))
 
@@ -95,8 +97,8 @@ mha_per_m2 = 0.0001/1e6
     # p_obs1 = p_obs[which(obs_t >= "2007-1-1" & obs_t <= "2015-12-31")]/55.5/55.5e6
     # t1 = obs_t[which(obs_t >= "2007-1-1" & obs_t <= "2015-12-31")]
 
-    ts_obs_yr = (tapply(X = ts_obs, INDEX = strftime(fire_obs$time, "%Y"), FUN = sum))
-    ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = sum))
+    ts_obs_yr = (tapply(X = ts_obs, INDEX = strftime(fire_obs$time, "%Y"), FUN = mean))*12
+    ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = mean))*12
     tmpcor_yoy = cor(ts_pred_yr, ts_obs_yr)
 
     # plot(ts_obs_yr~unique(strftime(obs_t, "%Y")), ylim=c(0,75))
@@ -115,6 +117,21 @@ mha_per_m2 = 0.0001/1e6
     spacor = cor(as.numeric(slice_pred), as.numeric(slice_obs))
     # write.table(x = spacor, file = "spacor.txt", row.names = F, col.names = F)
 
+    # spatcor = matrix(nrow = dim(fire_pred$data)[1], ncol = dim(fire_pred$data)[2])
+    # spatcor_yoy = matrix(nrow = dim(fire_pred$data)[1], ncol = dim(fire_pred$data)[2])
+    # for (i in 1:dim(spatcor)[1]){
+    #   for (j in 1:dim(spatcor)[2]){
+    #     spatcor[i,j] = cor(fire_pred$data[i,j,], fire_obs$data[i,j,])
+    #     spatcor_yoy[i,j] = cor(tapply(X = fire_obs$data[i,j,], INDEX = strftime(fire_obs$time, "%Y"), FUN = mean)*12,
+    #                            tapply(X = fire_pred$data[i,j,], INDEX = strftime(fire_pred$time, "%Y"), FUN = mean)*12
+    #                           )
+    #   }
+    # }
+    # image(t(matrix(seq(-1,1,length.out=100), nrow=1)), col=colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
+    # image(spatcor, col = colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
+    # image(spatcor_yoy, col = colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
+    
+    
     # cols = createPalette(c("black", "blue","green3","yellow","red"),c(0,25,50,100,1000), n = 1000)
     # cols = createPalette(c("black", "black", "black","blue","mediumspringgreen","yellow","orange", "red","brown"),c(0,0.2,0.5,1,2,5,10,20,50,100)*1000, n = 1000)
     cols = createPalette(c("black", "blue4", "blue", "skyblue", "cyan","mediumspringgreen","yellow","orange", "red","brown"),c(0,0.2,0.5,1,2,5,10,20,50,100)*1000, n = 1000) #gfed
@@ -159,8 +176,8 @@ mha_per_m2 = 0.0001/1e6
     mtext(text = "All seasons",side = 3,line = 1,outer = T)
     dev.off()
 
-    cat("full", "\t", spacor, "\t", tmpcor, "\t", tmpcor_yoy, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n")
-    cat(spacor, "\t", tmpcor, "\t", tmpcor_yoy, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n", file = "metrics.txt")
+    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n")
+    cat(tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n", file = "metrics.txt")
 #   }
 #   cat("\n\n\n")
 # }

@@ -45,7 +45,7 @@ from variables import *	# Import variable IDs as in training data csv
 
 ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
-X_ids = [ID_cru_ts] + ID_ft
+X_ids = [ID_cru_ts, ID_cld, ID_cru_vp] + ID_ft
 
 n_inputs = len(X_ids)
 
@@ -93,7 +93,7 @@ def denseNet(x, W1,b1,Wo,bo):
 
 print("Reading training data...")
 my_data = genfromtxt('../'+output_dir+'/train_forest.csv', delimiter=',',skip_header=1)
-my_data = my_data[(my_data[:,ID_region] == 8) | (my_data[:,ID_region] == 9)]  # Region selection
+my_data = my_data[(my_data[:,ID_region] == 1) | (my_data[:,ID_region] == 1)]  # Region selection
 print("DONE")
 np.set_printoptions(precision=3, suppress=True)
 print("--------------")
@@ -112,12 +112,12 @@ print("--------------")
 
 print("Reading evalutation data...")
 eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
-eval_data = eval_data[(eval_data[:,ID_region] == 8) | (eval_data[:,ID_region] == 9)]  # Region selection
+eval_data = eval_data[(eval_data[:,ID_region] == 1) | (eval_data[:,ID_region] == 1)]  # Region selection
 print(eval_data[0:5, X_ids+[Y_id]])
 
 print("Reading test data...")
 test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
-test_data = test_data[(test_data[:,ID_region] == 8) | (test_data[:,ID_region] == 9)]  # Region selection
+test_data = test_data[(test_data[:,ID_region] == 1) | (test_data[:,ID_region] == 1)]  # Region selection
 print(test_data[0:5, X_ids+[Y_id]])
 print("--------------")
 

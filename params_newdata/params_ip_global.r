@@ -70,7 +70,7 @@ region		1		bilinear		  Fire_BA_GFED4.1s/ancil/basis_regions.nc
 
 > MASKS
 # var	|	interp 			| file 
-ftmask		bilinear 	  	  forest_type/MODIS/ftmask_MODIS_global_1deg.nc
+ftmask		none 	  	  	  forest_type/MODIS/ftmask_MODIS_global_1deg.nc
 msk			bilinear 	 	  util_data/masks/surta_global_0.5_sl.nc
 
 

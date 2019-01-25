@@ -1,9 +1,9 @@
 #!/bin/bash
 FOLDER=output_globe
-MODEL=AF_mod12
+MODEL=BONA_mod9
 
 VARS=(cru_ts rd_tp4 cld cru_vp pop prev_npp )
-USEV=(     1      0   0      0   0        0 )
+USEV=(     1	  0	  1	     1	 0	      0 )
 
 #################################################################
 #	Update code, folder names etc as per specified variables    #
@@ -25,12 +25,14 @@ done
 echo MODEL = $MODEL
 XID=$(sed '$ s/.$//' <<< $XID)				# remove the trailing comma
 XID=${XID}"] + ID_ft" 						# Add forest type
-echo $XID
 
-XIDLINE=$(grep -rn "X\_ids \= \[" tensorflow/nn_const_data_fire_v5_pureNN.py | cut -f1 -d:)	# Get the line that defines X_ids in the tensorflow code file
-echo $XIDLINE
+XIDLINE=$(grep -rn "X\_ids \= " tensorflow/nn_const_data_fire_v5_pureNN.py | cut -f1 -d:)	# Get the line that defines X_ids in the tensorflow code file
+
+echo "Replace Line $XIDLINE:" 
+echo "- " $(grep -r "X\_ids \= " tensorflow/nn_const_data_fire_v5_pureNN.py)
+echo "+ " $XID
+
 sed -i "${XIDLINE}s/.*/${XID}/" tensorflow/nn_const_data_fire_v5_pureNN.py	# Replace this line with the newly created X_ids 
-echo "New -- " $XID
 
 mkdir -p $FOLDER/$MODEL
 
