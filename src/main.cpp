@@ -88,7 +88,7 @@ void write_eval(MultiNcReader &R){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
-		if (region != 1 && region !=1) continue;
+		if (region != 12 && region !=12) continue;
 		
 		if (! R.ismasked(ilon,ilat)){ 
 			float ba_pred = 0;

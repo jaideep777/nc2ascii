@@ -208,9 +208,17 @@ mids = function(x){
 #   datf  
 # }
 
-read.fireData_gfed = function(dataset, dir){
+read.fireData_gfed = function(dataset, dir, regions=NULL){
   datf = read.csv(file = paste0(dir,"/../",dataset,"_forest.csv"))
   
+  if (!is.null(regions)){
+    ids = rep(FALSE, nrow(datf))
+    for (r in regions){
+      ids[datf$region == r] = TRUE
+    }
+    datf = datf[ids, ]
+  }    
+
   daty = read.delim(paste0(dir,"/y_predic_ba_",dataset,".txt"), header=F, sep=" ")
   # nfires_classes = c(0,1,sqrt(fire_classes[2:length(fire_classes)]* c(fire_classes[3:length(fire_classes)])))
   # nfires_pred = apply(X=daty, MARGIN=1, FUN=function(x){sum(nfires_classes*x)})
@@ -222,9 +230,9 @@ read.fireData_gfed = function(dataset, dir){
   ba_classes_mids[1] = 0
 
   datf$ba.pred = apply(X=daty, MARGIN=1, FUN=function(x){sum(ba_classes_mids*x)})
-  datf$ba.pred = datf$ba.pred - 0.0001
+  datf$ba.pred = datf$ba.pred - 0.000
   datf$ba.pred[datf$ba.pred < 0] = 0;
-  datf$baclass_pred = sapply(log(datf$ba.pred),FUN = function(x){length(which(x>ba_classes))})
+  datf$baclass_pred = sapply(log10(datf$ba.pred),FUN = function(x){length(which(x>ba_classes))})
   
   datf$ba = datf$gfed
   datf$baclass = datf$gfedclass

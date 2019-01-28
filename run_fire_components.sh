@@ -1,9 +1,9 @@
 #!/bin/bash
 FOLDER=output_globe
-MODEL=BONA_mod9
+MODEL=SEAS_mod12
 
 VARS=(cru_ts rd_tp4 cld cru_vp pop prev_npp )
-USEV=(     1	  0	  1	     1	 0	      0 )
+USEV=(     1	  0	  1	     0	 0	      1 )
 
 #################################################################
 #	Update code, folder names etc as per specified variables    #
