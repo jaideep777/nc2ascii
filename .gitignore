@@ -9,6 +9,8 @@
 *.odt
 *.xls
 *.xlsx
+*.ods
+.~*
 
 build
 lib

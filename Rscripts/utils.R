@@ -248,3 +248,40 @@ split.dataset = function(N, fracs){
   ids_train = ids[-c(ids_test,ids_eval)]
   list(train=ids_train, eval=ids_eval,test=ids_test)  
 }
+
+
+# denseNet = function(x, weights_file){
+#   r = readLines(weights_file, skipNul = T)
+#   s = unlist(strsplit(r, split = " "))
+#   w = as.numeric(s[-which(s=="")])
+#   
+#   nh = w[1]
+#   neurons = w[2:(3+nh)]
+#   nl = length(neurons)
+#   
+#   count = 3+nh
+#   
+#   weights = list()
+#   biases = list()
+#   
+#   weights[[1]] = matrix(data= w[count + 1:(neurons[1]^2) ], nrow=neurons[1], byrow = T)
+#   count = count + neurons[1]^2
+#   biases[[1]] = w[count + 1:(neurons[1]) ]
+#   count = count + neurons[1]
+#   
+#   for (l in 2:nl){
+#     weights[[l]] = matrix(data= w[count + 1:(neurons[l]*neurons[l-1]) ], ncol=neurons[l], byrow = T)
+#     count = count + neurons[l]*neurons[l-1]
+#     biases[[l]] = w[count + 1:(neurons[l]) ]
+#     count = count + neurons[l]
+#   }
+#   
+#   x = x%*%weights[[1]] + biases[[1]]
+#   for (l in 2:(nl-1)){
+#     x = x%*%weights[[l]] + biases[[l]]
+#     x[x<0] = exp(x[x<0])-1
+#   }
+#   x = x%*%weights[[nl]] + biases[[nl]]
+#   y = t(apply(X = x, MARGIN = 1, FUN = function(x) {exp(x-max(x))/sum(exp(x-max(x)))} ))
+#   y
+# }

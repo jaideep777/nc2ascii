@@ -8,14 +8,20 @@ else
 	FOLDER=$1	# take from commandline if not set
 fi
 
+if [[ -v MODEL ]]; then
+	echo pulling MODEL from calling script: $MODEL
+else
+	MODEL=$2	# take from commandline if not set
+fi
+
 PATH_BAK=$PATH
 export PATH=$PATH:/home/jaideep/anaconda2/bin
 . activate tensorflow
-python nn_const_data_fire_v5_pureNN.py -d $FOLDER
+python nn_const_data_fire_v5_pureNN.py -d $FOLDER -m $MODEL
 . deactivate
-sed -i -e "s/\\[/ /g" ../$FOLDER/weights_ba.txt
-sed -i -e "s/\\]/ /g" ../$FOLDER/weights_ba.txt
-sed -i -e "s/\\,/ /g" ../$FOLDER/weights_ba.txt
+sed -i -e "s/\\[/ /g" ../$FOLDER/$MODEL/weights_ba.txt
+sed -i -e "s/\\]/ /g" ../$FOLDER/$MODEL/weights_ba.txt
+sed -i -e "s/\\,/ /g" ../$FOLDER/$MODEL/weights_ba.txt
 PATH=$PATH_BAK
 
 

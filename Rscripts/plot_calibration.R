@@ -3,13 +3,13 @@ rm(list = ls())
 
 fire_dir = "~/codes/PureNN_fire"
 output_dir = "output_globe"
-model_dir = "CEAS_mod7_rdtp4_cld_cruvp_pop_prevnpp"
+model_dir = "AUS_mod84.1_gppl1_ts_vp"
 
-for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
+# for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 cat(model_dir, "\n")
 
 region_name = strsplit(model_dir, split = "_")[[1]][1]
-regions_list = list(BONA = c(1), TCAM = c(2,3), AF=c(8,9), SA = c(4,5), SEAS=c(12), CEAS= c(11), AUS = c(14))
+regions_list = list(BONA = c(1), TCAM = c(2,3), SA = c(4,5), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14))
 reg = get(region_name, regions_list)
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
@@ -35,6 +35,9 @@ source(paste0(fire_dir,"/Rscripts/utils.R"))
 
 dataset = "eval"
 datg = read.fireData_gfed(dataset = dataset, dir=paste0(fire_dir, "/",output_dir, "/", model_dir), regions=reg)
+
+# varids = sapply(X = c("cru_ts", "rd_tp4", "cld", "cru_vp", "pop", "prev_npp", paste0("ftmap", 1:11)), FUN = function(x){which(names(datg) == x)})
+# X = as.matrix(datg[,varids])
 
 #### calibration ####
 
@@ -158,4 +161,4 @@ dev.off()
 
 
 
-}
+# }

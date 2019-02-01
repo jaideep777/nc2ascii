@@ -42,7 +42,7 @@ inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 }
 
 
-void init_eval(MultiNcReader &R, string wts_file){
+void init_eval(MultiNcReader &R, string wts_file, string out_dir){
 
 	cout << "> Running in EVAL mode." << endl;
 	
@@ -74,13 +74,14 @@ void init_eval(MultiNcReader &R, string wts_file){
 	fire.setCoords(tvec, levs1, R.mglats, R.mglons);
 	fire.fill(fire.missing_value);
 
-	string fname = "fire."+R.sim_date0+"-"+R.sim_datef+".nc";
+	string fname = out_dir + "/fire."+R.sim_date0+"-"+R.sim_datef+".nc";
+	cout << "Creating output nc file: " << fname << endl;
 	fire.createNcOutputStream(fname);
 
 }
 
 
-void write_eval(MultiNcReader &R){
+void write_eval(MultiNcReader &R, string vars_file){
 
 	static int tc = 0;	
 	
@@ -88,23 +89,24 @@ void write_eval(MultiNcReader &R){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
-		if (region != 12 && region !=12) continue;
+		if (region != 11 && region !=11) continue;
 		
 		if (! R.ismasked(ilon,ilat)){ 
 			float ba_pred = 0;
 			vector <float> x;
 			
-			ifstream fin("nn_vars.txt");
+			ifstream fin(vars_file.c_str());
 			string var;
 			while (fin >> var){
 				float val = R.getVar(var)(ilon, ilat, 0);
 
-				if (var == "rd_tp3")  val = log(val + 1);
-				if (var == "rd_tp4")  val = log(val + 1);
-				if (var == "pop")     val = log(val + 1);
-				if (var == "npp")     val = log(val + 1);
-				if (var == "pr")      val = log(val + 1);
-				if (var == "prev_ba") val = log(val + 1e-5);
+				if (var == "rdtp3")  val = log(val + 1);
+				if (var == "rdtp4")  val = log(val + 1);
+
+				if (var == "pop")    val = log(val + 1);
+				if (var == "gfedl1") val = log(val + 1e-5);
+				if (var == "pr")     val = log(val + 1);
+				if (var == "rdtot")  val = log(val + 1);
 
 				x.push_back(val);
 			}
@@ -154,7 +156,7 @@ void write_eval(MultiNcReader &R){
 }
 
 
-int main_run(MultiNcReader &R){
+int main_run(MultiNcReader &R, string vars_file){
 
 	int dstep = R.nsteps/40+1;
 
@@ -165,20 +167,20 @@ int main_run(MultiNcReader &R){
 		
 		double t = R.nc_read_frame(istep);
 		
-		if (istep == 0){
-			for (int i=0; i<R.vars.size(); ++i){
-				string fname = R.vars[i].varname + int2str(istep) + ".nc";
-				R.vars[i].writeOneShot(fname);
-			}
+//		if (istep == 0){
+//			for (int i=0; i<R.vars.size(); ++i){
+//				string fname = R.vars[i].varname + int2str(istep) + ".nc";
+//				R.vars[i].writeOneShot(fname);
+//			}
 
-			for (int i=0; i<R.static_vars.size(); ++i){
-				string fname = R.static_vars[i].varname + int2str(istep) + ".nc";
-				R.static_vars[i].writeOneShot(fname);
-			}
-		}		
+//			for (int i=0; i<R.static_vars.size(); ++i){
+//				string fname = R.static_vars[i].varname + int2str(istep) + ".nc";
+//				R.static_vars[i].writeOneShot(fname);
+//			}
+//		}		
 
 		if (train) R.ascii_write_frame(t);
-		if (eval) write_eval(R);
+		if (eval) write_eval(R, vars_file);
 		
 //		if (istep % dstep == 0) {cout << "."; cout.flush();}
 	}	
@@ -207,9 +209,16 @@ int main(int argc, char ** argv){
 
 	R.init();
 
-	if (eval) init_eval(R, argv[3]);
+	string out_dir, weights_file, vars_file;
+	if (eval) {
+		out_dir = argv[3];
+		weights_file = out_dir + "/" + argv[4];
+		vars_file = out_dir + "/" + argv[5];
+	}
 
-	main_run(R);
+	if (eval) init_eval(R, weights_file, out_dir);
+
+	main_run(R, vars_file);
 
 	if (eval) fire.closeNcOutputStream();
 	

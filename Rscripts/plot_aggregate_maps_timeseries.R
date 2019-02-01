@@ -1,10 +1,12 @@
+rm(list = ls())
+
 ## CREATE timeseries	
 library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe"
-model_dir = "mod3_cruts_rd4_cld_rh_pop"
+output_dir = "output_globe_runs_v1"
+model_dir = "SEAS_mod5_cruts_cld_cruvp_pop_prevnpp"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 

@@ -25,10 +25,13 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", action="store", dest="output_dir", default="output")
+parser.add_argument("-m", action="store", dest="model_dir", default="mod1")
 result = parser.parse_args()
 
 output_dir = result.output_dir  #'output_globe'
+model_dir  = result.model_dir   #'output_globe'
 print("output_dir = ", output_dir)
+print("model_dir  = ", model_dir)
 
 __learn_rate = 0.005
 __batch_size = 5000
@@ -45,9 +48,7 @@ from variables import *	# Import variable IDs as in training data csv
 
 ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
-X_ids = [ID_cru_ts, ID_cld, ID_prev_npp] + ID_ft
-
-n_inputs = len(X_ids)
+X_ids = [ID_gppl1, ID_cld, ID_vp, ID_pop, ID_rdtot] + ID_ft
 
 Y_id = ID_gfedclass
 	
@@ -93,7 +94,7 @@ def denseNet(x, W1,b1,Wo,bo):
 
 print("Reading training data...")
 my_data = genfromtxt('../'+output_dir+'/train_forest.csv', delimiter=',',skip_header=1)
-my_data = my_data[(my_data[:,ID_region] == 12) | (my_data[:,ID_region] == 12)]  # Region selection
+my_data = my_data[(my_data[:,ID_region] == 11) | (my_data[:,ID_region] == 11)]  # Region selection
 print("DONE")
 np.set_printoptions(precision=3, suppress=True)
 print("--------------")
@@ -104,20 +105,27 @@ print("Output: (head)");
 print(tf.Session().run(tf.one_hot(my_data[0:5,Y_id], depth=n_classes, dtype=tf.int32)))
 print("--------------")
 
+
+
+
 Xmeans = np.mean(my_data[:,X_ids], axis=0)
 Xstd = np.std(my_data[:,X_ids], axis=0)
 print("Input means/sd:");
 print(Xmeans)
 print("--------------")
 
+#Xmeans = np.concatenate((Xmeans, [0]*len(ID_ft)), axis=0)
+#Xstd   = np.concatenate((Xstd,   [1]*len(ID_ft)), axis=0)
+#X_ids   = X_ids   + ID_ft
+
 print("Reading evalutation data...")
 eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
-eval_data = eval_data[(eval_data[:,ID_region] == 12) | (eval_data[:,ID_region] == 12)]  # Region selection
+eval_data = eval_data[(eval_data[:,ID_region] == 11) | (eval_data[:,ID_region] == 11)]  # Region selection
 print(eval_data[0:5, X_ids+[Y_id]])
 
 print("Reading test data...")
 test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
-test_data = test_data[(test_data[:,ID_region] == 12) | (test_data[:,ID_region] == 12)]  # Region selection
+test_data = test_data[(test_data[:,ID_region] == 11) | (test_data[:,ID_region] == 11)]  # Region selection
 print(test_data[0:5, X_ids+[Y_id]])
 print("--------------")
 
@@ -166,6 +174,8 @@ next_batch = iterator.get_next()
 
 training_iterator = dat_train.make_one_shot_iterator()
 #validation_iterator = dat_valid.make_one_shot_iterator()
+
+n_inputs = len(X_ids)
 
 
 x  = tf.reshape(next_batch[0], shape=[-1,n_inputs])
@@ -259,9 +269,9 @@ with tf.Session() as sess:
   y_ts = sess.run(tf.nn.softmax(denseNet(tf.reshape(xtest, [-1,n_inputs]),W1,b1,Wo,bo)))
 
 
-  np.savetxt("../"+output_dir+"/y_predic_ba_train.txt",y_tr,delimiter=" ")
-  np.savetxt("../"+output_dir+"/y_predic_ba_eval.txt",y_ev,delimiter=" ")
-  np.savetxt("../"+output_dir+"/y_predic_ba_test.txt",y_ts,delimiter=" ")
+  np.savetxt("../"+output_dir+"/"+model_dir+"/y_predic_ba_train.txt",y_tr,delimiter=" ")
+  np.savetxt("../"+output_dir+"/"+model_dir+"/y_predic_ba_eval.txt",y_ev,delimiter=" ")
+  np.savetxt("../"+output_dir+"/"+model_dir+"/y_predic_ba_test.txt",y_ts,delimiter=" ")
 
 
 #  def rmb(s):	# small function to remove square brackets from printed arrays 
@@ -275,7 +285,7 @@ with tf.Session() as sess:
   np.set_printoptions(precision=10)
   
   orig_stdout = sys.stdout
-  f = open("../"+output_dir+"/weights_ba.txt",'w')
+  f = open("../"+output_dir+"/"+model_dir+"/weights_ba.txt",'w')
   sys.stdout = f
 
   print(1)
@@ -300,7 +310,7 @@ with tf.Session() as sess:
   sys.stdout=orig_stdout;  
   f.close()
   
-  np.savetxt("../"+output_dir+"/ce_and_accuracy.txt", [ce_avg/count, acc_avg/count,  accv_avg/count, acct_avg/count])  
+  np.savetxt("../"+output_dir+"/"+model_dir+"/ce_and_accuracy.txt", [ce_avg/count, acc_avg/count,  accv_avg/count, acct_avg/count])  
   
   
 

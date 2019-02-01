@@ -1,3 +1,4 @@
+rm(list=ls())
 # Simulation name ("" or "india" or "ssaplus" etc)
 
 fire_dir    = "~/codes/PureNN_fire"
@@ -12,24 +13,19 @@ clamp = function(x, a,b){
 # clean up aggregated data in R and select forest grids only
 datm = read.delim(paste0(fire_dir, "/",output_dir,"/train_data.txt"), header=T)
 datm = datm[,-length(datm)]
-datm$pr = NULL
-datm$prev_pr = NULL
 datm[datm > 1e19] = NA
 # ba_classes = c(0,2^(seq(log2(2^0), log2(2^10), length.out=11)))/1024
 ba_classes = c(0, seq(-6,0,by=0.25))
 datm$gfedclass = sapply(log10(datm$gfed),FUN = function(x){length(which(x>ba_classes))})
+datm$trmm = NULL
 
 datm$pop = log(1+datm$pop)
-datm$prev_ba = log(1e-5+datm$prev_ba)
-# datm$pr = log(1+datm$pr)
-datm$npp = log(1+datm$npp)
+datm$gfedl1 = log(1e-5+datm$gfedl1)
+datm$pr = log(1+datm$pr)
+datm$rdtot = log(1+datm$rdtot)
 
-# datm$rd_tot = log(1+datm$rd_tot)
-# datm$rd_tp1 = log(1+datm$rd_tp1)
-# datm$rd_tp2 = log(1+datm$rd_tp2)
-datm$rd_tp3 = log(1+datm$rd_tp3)
-datm$rd_tp4 = log(1+datm$rd_tp4)
-# datm$rd_tp5 = log(1+datm$rd_tp5)
+datm$rdtp3 = log(1+datm$rdtp3)
+datm$rdtp4 = log(1+datm$rdtp4)
 
 # cru_rh =  datm$cru_vp*100 / (610.78 * exp( datm$cru_ts / ( datm$cru_ts + 238.3 ) * 17.2694 ))
 
@@ -42,7 +38,7 @@ datf = dat_good
 
 xlim = c(min(datf$lon),max(datf$lon))
 ylim = c(min(datf$lat),max(datf$lat))
-ptsiz = 15  # 12 for india
+ptsiz = 17  # 12 for india
 
 # png(paste0(fire_dir, "/fire_aggregateData/output",suffix,"/lmois.png"), width = 400, height = 500)
 # par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
@@ -50,24 +46,51 @@ ptsiz = 15  # 12 for india
 #       plot.colormap(X=lon, Y=lat, Z = lmois, zlim = c(-0.01,1.01), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
 # )
 # dev.off()
-png(paste0(fire_dir, "/",output_dir,"/dft.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
+ftypes = c('barren',
+           'evergreen needleleaf forest',
+           'evergreen broadleaf forest',
+           'deciduous needleleaf forest',
+           'deciduous broadleaf forest',
+           'mixed forests',
+           'closed shrublands',
+           'open shrublands',
+           'woody savannas',
+           'savannas',
+           'grasslands',
+           'croplands',
+           'mixed types')
+
+ftcols = c('grey',
+           'aquamarine',
+           'green4',
+           'darkseagreen1',
+           'green2',
+           'grey10',
+           'pink',
+           'pink3',
+           'darkolivegreen3',
+           'yellow1',
+           'darkgoldenrod1',
+           'magenta',
+           'grey10')
+png(paste0(fire_dir, "/",output_dir,"/dft.png"), width = diff(xlim)*8, height = diff(ylim)*400/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
-with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
-      plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,12), col = rainbow(13), cex = ptsiz, xlim = xlim, ylim = ylim)
+with( dat_good[as.Date(dat_good$date) == as.Date("2003-01-16"),],
+      plot.colormap1(X=lon, Y=lat, Z = dft, zlim = c(0,12), col = ftcols, cex = ptsiz, xlim = xlim, ylim = ylim)
 )
 dev.off()
 
-png(paste0(fire_dir, "/",output_dir,"/logpop.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
+png(paste0(fire_dir, "/",output_dir,"/logpop.png"), width = diff(xlim)*8, height = diff(ylim)*400/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
-with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
+with( dat_good[as.Date(dat_good$date) == as.Date("2003-01-16"),],
       plot.colormap(X=lon, Y=lat, Z = pop, zlim = c(-0.01,11), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
 )
 dev.off()
 
-png(paste0(fire_dir, "/",output_dir,"/rd_tp3.png"), width = diff(xlim)*10, height = diff(ylim)*500/45)
+png(paste0(fire_dir, "/",output_dir,"/rd_tot.png"), width = diff(xlim)*8, height = diff(ylim)*400/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
-with( dat_good[as.Date(dat_good$date) == as.Date("2006-01-16"),],
-      plot.colormap(X=lon, Y=lat, Z = rd_tp3, zlim = c(-0.01,9), col = rainbow(100), cex = ptsiz, xlim = xlim, ylim = ylim)
+with( dat_good[as.Date(dat_good$date) == as.Date("2003-01-16"),],
+      plot.colormap(X=lon, Y=lat, Z = rdtot, zlim = c(-0.01,9), col = heat.colors(100), cex = ptsiz, xlim = xlim, ylim = ylim)
 )
 dev.off()
 
@@ -126,24 +149,67 @@ tt = table(dat_train$dft)
 sample_size = max(tt)
 
 
-# #### Remove spurious values from training set
-# nl = plot.cut.means_obs(obs = dat_train$ba, var = dat_train$lmois, min = 0, max = 1, col.obs = "cyan3", col.pred = "blue", xlab="Fuel moisture", ylab="Burned area")
-# nt = plot.cut.means_obs(obs = dat_train$ba, var = dat_train$ts, min = 250, max = 320, col.obs = "orange2", col.pred = "red", xlab="Fuel moisture", ylab="Burned area")
-# nr = plot.cut.means_obs(obs = dat_train$ba, var = dat_train$rh, min = 0, max = 110, col.obs = "magenta", col.pred = "magenta4", xlab="Rel humidity", ylab="Burned area")
-# nw = plot.cut.means_obs(obs = dat_train$ba, var = dat_train$wsp, min = 0, max = 8, col.obs = rgb(.3,.3,.3), col.pred = rgb(.6,.6,.6), xlab="Wind speed", ylab="Burned area")
-# nh = plot.cut.means_obs(obs = dat_train$ba, var = dat_train$logpop, min = 0, max = 8, col.obs = "goldenrod", col.pred = "goldenrod4", xlab="Log pop density", ylab="Burned area")
-# 
-# dat_train$ba[which(nt$class == names(nt$classsizes[18]) | nt$class == names(nt$classsizes[17]))] = NA
-# dat_train$ba[which(nl$class == names(nl$classsizes[1]))] = NA
-# dat_train = dat_train[complete.cases(dat_train),]
-# 
-# dat_eval$ba[which(dat_eval$lmois < 0.05)] = NA
-# dat_eval$ba[which(dat_eval$ts > 305)] = NA
-# dat_eval = dat_eval[complete.cases(dat_eval),]
-
-
 write.csv(x = dat_train, file=paste0(fire_dir, "/",output_dir,"/train_forest.csv"), row.names = F)
 write.csv(x = dat_eval, file=paste0(fire_dir, "/",output_dir,"/eval_forest.csv"), row.names = F)
 write.csv(x = dat_test, file=paste0(fire_dir, "/",output_dir,"/test_forest.csv"), row.names = F)
 
-write(x = paste0("ID_", colnames(dat_train), " = ", 1:length(dat_train)-1), file=paste0(fire_dir, "/",output_dir,"/variables.txt"), ncolumns = 1)
+write(x = paste0("ID_", colnames(dat_train), " = ", 1:length(dat_train)-1), file=paste0(fire_dir, "/",output_dir,"/variables.py"), ncolumns = 1)
+
+
+## Regions analysis
+datm$fire = as.integer(datm$gfed > 0)
+
+regions_list = list(BONA = c(1), TCAM = c(2,3), SA = c(4,5), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14), OTHER = c(6,7,10,13))
+regions = c("BONA", #1
+            "TCAM", #2
+            "TCAM", #3
+            "SA",
+            "SA",
+            "OTHER",
+            "OTHER",
+            "AF",
+            "AF",
+            "OTHER",
+            "CEAS",
+            "SEAS",
+            "OTHER",
+            "AUS")
+
+
+# datm$region_short = sapply(X = datm$region, FUN = function(x){names(regions_list)[which(sapply(1:length(regions_list), function(i) any(regions_list[[i]] == x)))]})
+datm$region_short = regions[datm$region]
+# 
+# par(mfrow = c(3,1), mar=c(4,2,2,2), oma=c(1,1,1,1), cex.lab=1.5, cex.axis= 1.5)
+# for (i in c(5,6,7,14,31,11)){
+#   boxplot(datm[,i]~datm$fire+datm$region_short, main=names(datm)[i], col=c("green4", "orange"), outline=F )
+# }
+# 
+# 
+# for (reg in unique(datm$region_short)){
+#   png(filename = paste0(fire_dir, "/",output_dir,"/",reg,".png"), width=840, height=750)
+#   pairs(datm[datm$region_short == reg, c(5,6,7,14,31,11)], panel=function(x,y) smoothScatter(x,y,add=T), main=reg)
+#   dev.off()
+# }
+# 
+# for (reg in unique(datm$dft)){
+#   # png(filename = paste0(fire_dir, "/",output_dir,"/ft_",reg,".png"), width=840, height=750)
+#   pairs(datm[datm$dft == reg, c(5,6,7,14,31,11)], panel=function(x,y) smoothScatter(x,y,add=T), main=reg)
+#   # dev.off()
+# }
+# 
+# 
+# for (reg in unique(datm$dft)){
+#   varids = sapply(X = c("gpp.l1", "gpp.l2", "pr.l1", "pr.l2"), FUN = function(x){which(names(datm) == x)})
+#   pairs(datm[datm$dft == reg, varids], panel=function(x,y) smoothScatter(x,y,add=T), main=reg)
+# }
+# 
+# for (reg in unique(datm$dft)){
+#   varids = sapply(X = c("cru_ts", "cld", "pr", "cru_vp"), FUN = function(x){which(names(datm) == x)})
+#   pairs(datm[datm$dft == reg, varids], panel=function(x,y) smoothScatter(x,y,add=T), main=reg)
+# }
+
+varids = sapply(X = c("gppm1", "gppl06", "gppl1"), FUN = function(x){which(names(datm) == x)})
+pairs(datm[datm$region_short == "SEAS", varids], panel=function(x,y) smoothScatter(x,y,add=T), main="SEAS")
+pairs(datm[datm$region_short == "SEAS", varids], panel=function(x,y) points(x,y,pch="."), main="SEAS")
+
+
