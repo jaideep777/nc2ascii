@@ -3,60 +3,60 @@
 
 > FORCING_DATA_DIRS
 
-forcing_data_dir	/media/chethana/Totoro/Data/SORT_FOR_FIRE
+forcing_data_dir	/home/chethana/Data
 
 # var |	  dir
 # ts			ncep_reanalysis/ts
-ts			CRU_TS4.02
-vp			CRU_TS4.02
+ts			Fire
+vp			Fire
 # cru_tmx		CRU_TS4.02
-rh			ncep_reanalysis/rhum
-wsp			ncep_reanalysis/wsp
+rh			Fire
+wsp			Fire
 # trmm		precip_trmm/combined/reordered_dims
-pr			precip_gpcp2.3
-prl1		precip_gpcp2.3
-prl2		precip_gpcp2.3
+pr			Fire
+prl1		Fire
+prl2		Fire
 # ndr			ndr_daily
-gppl1		GPP_modis
-gppl2		GPP_modis
-gppm1		GPP_modis
-gppm1s		GPP_modis
+gppl1		Fire
+gppl2		Fire
+gppm1		Fire
+gppm1s		Fire
 # ffev		fire_events_modis/india/fire_modis_0.5
 # ba		fire_BA/fire_fire_calib
-gfed		Fire_BA_GFED4.1s/nc
-gfedl1		Fire_BA_GFED4.1s/nc
-cld			MODISAL2_cloud_fraction/nc_merged
+gfed		Fire
+gfedl1		Fire
+cld			Fire
 # prev_cld	MODISAL2_cloud_fraction/nc_merged
-pop			World_population_density
+pop			Fire
 	
 
 > FORCING_VARIABLE_DATA
 # name | unit 	|	prefix   		|	start_yr |	end_yr | nyrs/file | nlevs |    T mode			| Interpolation
 # ts		 K			air.sig995			2000		2015		1			1		linear			 bilinear
-ts	 	 degC		cru_ts4.02.tmp		1901		2017		117			1		linear			 coarsegrain
-vp	 	 hPa		cru_ts4.02.vap		1901		2017		117			1		linear			 coarsegrain
+ts	 	 degC		ts					2003		2015		13			1		linear			 none
+vp	 	 hPa		vp					2003		2015		13			1		linear			 none
 # cru_tmx	 degC		cru_ts4.02.tmx		1901		2017		117			1		linear			 coarsegrain
-rh		 %			rhum.sig995			2000		2015		1			1		linear			 bilinear
-wsp		 m/s		wsp.sig995			2000		2015		1			1		linear			 bilinear
+rh		 %			rh					2003		2015		13			1		linear			 none
+wsp		 m/s		wsp					2003		2015		13			1		linear			 none
 # trmm	 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 coarsegrain
-pr		 mm/day		gpcp.mon.mean		1979		2018		40			1		linear			 bilinear
-prl1	 mm/day		gpcp.mon.mean		1979		2018		40			1		yearly_lag1		 bilinear
-prl2	 mm/day		gpcp.mon.mean		1979		2018		40			1		yearly_lag2		 bilinear
+pr		 mm/day		pr					2003		2015		13			1		linear			 none
+prl1	 mm/day		prl1				2003		2015		13			1		linear			 none
+prl2	 mm/day		prl2				2003		2015		13			1		linear			 none
 # ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	 bilinear
 # npp		 gC/m2/s	npp					2000		2015		16			1		linear			 bilinear
 # ffev	 f/day		fire_events			2000		2015		1			1		linear			 bilinear
 # ba	 m2			burned_area_0.5deg	2001		2016		16			1		linear		 	 bilinear
-gfed	 %			GFED_4.1s			1997 		2016		20			1		linear			 coarsegrain
-gfedl1	 %			GFED_4.1s			1997 		2016		20			1		yearly_lag1		 coarsegrain
-cld		 -			MODAL2_M_CLD_FR		2001		2018		1			1		linear			 coarsegrain
+gfed	 %			gfed				2003 		2015		13			1		linear			 none
+gfedl1	 %			gfedl1				2003 		2015		13			1		linear			 none
+cld		 -			cld					2003		2015		13			1		linear			 none
 # prev_ba	 %			GFED_4.1s			1997 		2016		20			1		prev_yearly		 coarsegrain
-gppl1 	 gC/m2/s	gpp					2000		2015		16			1		yearly_lag1		 bilinear
-gppl2 	 gC/m2/s	gpp					2000		2015		16			1		yearly_lag2		 bilinear
-gppm1 	 gC/m2/s	gpp					2000		2015		16			1		prev_year		 bilinear
-gppm1s 	 gC/m2/s	gpp					2000		2015		16			1		prev_year_S 	 bilinear
+gppl1 	 gC/m2/s	gppl1				2003		2015		13			1		linear			 none
+gppl2 	 gC/m2/s	gppl2				2003		2015		13			1		linear			 none
+gppm1 	 gC/m2/s	gppm1				2003		2015		13			1		linear			 none
+gppm1s 	 gC/m2/s	gppm1s				2003		2015		13			1		linear		 	 none
 # prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 coarsegrain		
 # prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
-pop		 - 			GHS_POP_GPW4_0.25deg 2000		2015		16			1		linear			 coarsegrain
+pop		 - 			pop					2003		2015		13			1		linear			 none
 
 # file name will be taken as "prefix.yyyy.nc" or "prefix.yyyy-yyyy.nc"
 # value types: ins (instantaneous), sum, avg (not used as of now)

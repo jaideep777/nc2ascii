@@ -89,7 +89,7 @@ void write_eval(MultiNcReader &R, string vars_file){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
-		if (region != 11 && region !=11) continue;
+		if (region != 4 && region !=5) continue;
 		
 		if (! R.ismasked(ilon,ilat)){ 
 			float ba_pred = 0;
@@ -180,6 +180,8 @@ int main_run(MultiNcReader &R, string vars_file){
 //		}		
 
 		if (train) R.ascii_write_frame(t);
+		if (train) R.nc_write_frame(istep);
+
 		if (eval) write_eval(R, vars_file);
 		
 //		if (istep % dstep == 0) {cout << "."; cout.flush();}
@@ -206,6 +208,7 @@ int main(int argc, char ** argv){
 
 	MultiNcReader R(argv[2]);
 	if (train) R.ascout = true;
+	if (train) R.ncout  = true;
 
 	R.init();
 
@@ -214,15 +217,15 @@ int main(int argc, char ** argv){
 		out_dir = argv[3];
 		weights_file = out_dir + "/" + argv[4];
 		vars_file = out_dir + "/" + argv[5];
+		init_eval(R, weights_file, out_dir);
 	}
 
-	if (eval) init_eval(R, weights_file, out_dir);
 
 	main_run(R, vars_file);
 
-	if (eval) fire.closeNcOutputStream();
-	
 	R.close();
+
+	if (eval) fire.closeNcOutputStream();
 	
 	return 0;
 }

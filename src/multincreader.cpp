@@ -377,6 +377,25 @@ int MultiNcReader::init_vars(){
 		point_fout << endl;
 	}
 
+
+	if (ncout){
+		// create output streams for variables in ip_data
+		log_fout << "\n<< Variables to be written to NC files: ";
+		for (int i=0; i<model_variables.size(); ++i){
+			string vname = model_variables[i]->varname;
+			if (ip_data_map.find(vname) != ip_data_map.end()){ 	// check if variable is in input_data_map
+				log_fout << vname << ", ";
+
+				// create input stream
+				string outfilename = data_dirs["forcing_data_dir"] + "/" + vname + "." + int2str(gt2year(ymd2gday(sim_date0))) + "-" + int2str(gt2year(ymd2gday(sim_datef))) + ".nc";
+				model_variables[i]->createNcOutputStream(outfilename);
+			}
+			else{
+			} 
+		}
+		log_fout << endl;
+	}
+
 	log_fout << endl;
 
 	log_fout << "\n========== END VARIABLE INITIALIZATION ================\n\n" << endl;
@@ -452,20 +471,13 @@ int MultiNcReader::close(){
 	}
 	log_fout << "- Done." << endl;
 
+	// close ascii output file
 	if (ascout) point_fout.close();
 	
-//	// close output streams 
-//	log_fout << "!! Closing output streams: ";
-//	for (int i=0; i<model_variables.size(); ++i){
-//		string vname = model_variables[i]->varname;
-//		if (model_variables[i]->lwrite){	
-//			log_fout << vname << ", ";
-//			
-//			// close output stream
-//			model_variables[i]->closeNcOutputStream();
-//		}
-//	}
-//	log_fout << "- Done." << endl;
+	// close nc output file
+	if (ncout) {
+		for (int i=0; i<vars.size(); ++i) vars[i].closeNcOutputStream();
+	}
 	
 	// close log files
 	log_fout.close();
@@ -540,9 +552,11 @@ double MultiNcReader::nc_read_frame(int istep){
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}
-		else if (ip_data_map[vars[i].varname].mode == "prev_year_shift6"){ 
-			double tstart1 = ymd2gday(yr-1,1,1) - 0.5*365.25;
-			double tend1   = ymd2gday(yr-1,12,31) + 23.9/24 - 0.5*365.25;
+		else if (ip_data_map[vars[i].varname].mode == "prev_year_S"){ 
+			double d_S = d - 365.2524/2;	// shift current date by 6 months
+			int yr_S  = gt2year(d_S);
+			double tstart1 = ymd2gday(yr_S-1,7,1);
+			double tend1   = ymd2gday(yr_S  ,6,31) + 23.9/24;
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}
@@ -602,10 +616,10 @@ int MultiNcReader::ascii_write_frame(double gt){
 
 
 int MultiNcReader::nc_write_frame(int islice){
-	for (int i=0; i<model_variables.size(); ++i){
-		string vname = model_variables[i]->varname;
-		if (model_variables[i]->lwrite){
-			model_variables[i]->writeVar(islice);
+	for (int i=0; i<vars.size(); ++i){
+		string vname = vars[i].varname;
+		if (vars[i].lwrite){
+			vars[i].writeVar(islice);
 		}
 	}
 }

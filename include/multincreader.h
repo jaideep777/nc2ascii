@@ -63,7 +63,7 @@ class MultiNcReader{
 
 	// output
 	bool ascout, ncout;
-	string pointOutFile;
+	string pointOutFile, ncoutDir;
 	ofstream point_fout;
 
 	// global variables for use in this file only
