@@ -3,9 +3,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 #from tensorflow.data import Dataset, Iterator
 import numpy as np
-from numpy import genfromtxt
+#from numpy import genfromtxt
 import sys
 import argparse
+import pandas as pd
 
 #string regions_names[] = {"BONA (Boreal North America)",				// 1
 #				          "TENA (Temperate North America)",				// 2
@@ -48,7 +49,7 @@ from variables import *	# Import variable IDs as in training data csv
 
 ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
-X_ids = [ID_gppl1, ID_cld, ID_vp, ID_pop, ID_rdtot] + ID_ft
+X_ids = [ID_gppm1s, ID_ts, ID_cld, ID_pop, ID_rdtot] + ID_ft
 
 Y_id = ID_gfedclass
 	
@@ -93,13 +94,13 @@ def denseNet(x, W1,b1,Wo,bo):
 ### PREPARE TRAINING DATA AS NUMPY ARRAYS ###
 
 print("Reading training data...")
-my_data = genfromtxt('../'+output_dir+'/train_forest.csv', delimiter=',',skip_header=1)
-my_data = my_data[(my_data[:,ID_region] == 11) | (my_data[:,ID_region] == 11)]  # Region selection
+df = pd.read_csv('../'+output_dir+'/train_forest.csv', engine='c')
+my_data = df.values[(df.values[:,ID_region] == 4) | (df.values[:,ID_region] == 5)]  # Region selection
 print("DONE")
-np.set_printoptions(precision=3, suppress=True)
+np.set_printoptions(precision=6, suppress=True)
 print("--------------")
 print("Input: (head) | y");
-print(my_data[0:5, X_ids+[Y_id]])
+print(my_data[0:5, X_ids+[Y_id]].astype(float))
 print("--------------")
 print("Output: (head)");
 print(tf.Session().run(tf.one_hot(my_data[0:5,Y_id], depth=n_classes, dtype=tf.int32)))
@@ -108,8 +109,8 @@ print("--------------")
 
 
 
-Xmeans = np.mean(my_data[:,X_ids], axis=0)
-Xstd = np.std(my_data[:,X_ids], axis=0)
+Xmeans = np.mean(my_data[:,X_ids].astype(float), axis=0)
+Xstd = np.std(my_data[:,X_ids].astype(float), axis=0)
 print("Input means/sd:");
 print(Xmeans)
 print("--------------")
@@ -119,14 +120,14 @@ print("--------------")
 #X_ids   = X_ids   + ID_ft
 
 print("Reading evalutation data...")
-eval_data = genfromtxt('../'+output_dir+'/eval_forest.csv', delimiter=',',skip_header=1)
-eval_data = eval_data[(eval_data[:,ID_region] == 11) | (eval_data[:,ID_region] == 11)]  # Region selection
-print(eval_data[0:5, X_ids+[Y_id]])
+dfe = pd.read_csv('../'+output_dir+'/eval_forest.csv', engine='c')
+eval_data = dfe.values[(dfe.values[:,ID_region] == 4) | (dfe.values[:,ID_region] == 5)]  # Region selection
+print(eval_data[0:5, X_ids+[Y_id]].astype(float))
 
 print("Reading test data...")
-test_data = genfromtxt('../'+output_dir+'/test_forest.csv', delimiter=',',skip_header=1)
-test_data = test_data[(test_data[:,ID_region] == 11) | (test_data[:,ID_region] == 11)]  # Region selection
-print(test_data[0:5, X_ids+[Y_id]])
+dfte = pd.read_csv('../'+output_dir+'/test_forest.csv', engine='c')
+test_data = dfte.values[(dfte.values[:,ID_region] == 4) | (dfte.values[:,ID_region] == 5)]  # Region selection
+print(test_data[0:5, X_ids+[Y_id]].astype(float))
 print("--------------")
 
 
@@ -139,19 +140,19 @@ print(bi)
 
 #### TENSORFLOW GRAPH BUILDING STARTS HERE ### 
 
-xin = tf.matmul(tf.cast(my_data[:,X_ids], tf.float32), Wi) - bi
-yin = tf.one_hot(my_data[:,Y_id], depth=n_classes, dtype=tf.int32)
+xin = tf.matmul(tf.cast(my_data[:,X_ids].astype(float), tf.float32), Wi) - bi
+yin = tf.one_hot(my_data[:,Y_id].astype(float), depth=n_classes, dtype=tf.int32)
 
 print("Scaled inputs:")
 print(tf.Session().run(xin[0:5,:]))
 print(tf.Session().run(yin[0:5,:]))
 print("--------------")
 
-xeval = tf.matmul(tf.cast(eval_data[:,X_ids], tf.float32), Wi) - bi
-yeval = tf.one_hot(eval_data[:,Y_id], depth=n_classes, dtype=tf.int32)
+xeval = tf.matmul(tf.cast(eval_data[:,X_ids].astype(float), tf.float32), Wi) - bi
+yeval = tf.one_hot(eval_data[:,Y_id].astype(float), depth=n_classes, dtype=tf.int32)
 
-xtest = tf.matmul(tf.cast(test_data[:,X_ids], tf.float32), Wi) - bi
-ytest = tf.one_hot(test_data[:,Y_id], depth=n_classes, dtype=tf.int32)
+xtest = tf.matmul(tf.cast(test_data[:,X_ids].astype(float), tf.float32), Wi) - bi
+ytest = tf.one_hot(test_data[:,Y_id].astype(float), depth=n_classes, dtype=tf.int32)
 
 print("Scaled test data:")
 print(tf.Session().run(xtest[0:5,:]))
