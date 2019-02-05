@@ -3,7 +3,7 @@
 
 > FORCING_DATA_DIRS
 
-forcing_data_dir	/home/chethana/Data
+forcing_data_dir	/home/jaideep/Data
 
 # var |	  dir
 # ts			ncep_reanalysis/ts

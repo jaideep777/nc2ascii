@@ -2,14 +2,14 @@ rm(list = ls())
 #### PREDICTED FIRES - CALIBRATION ####
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe"
-model_dir = "AUS_mod84.1_gppl1_ts_vp"
+output_dir = "output_globe"#_runs_final"
+model_dir = "SA_mod48.1_pr_ts"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 cat(model_dir, "\n")
 
 region_name = strsplit(model_dir, split = "_")[[1]][1]
-regions_list = list(BONA = c(1), TCAM = c(2,3), SA = c(4,5), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14))
+regions_list = list(BONA = c(1), TCAM = c(2,3), SA = c(4,5), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14), GLOBE = 1:14)
 reg = get(region_name, regions_list)
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
@@ -93,6 +93,7 @@ plot_calib = function(datf, name, min=2e-4, max=2e-1, nscale = 200){
     b = summary(lm(datf$ba~datf$ba.pred))
     nmse_act = sum(f(datf$ba)-f(datf$ba.pred))^2/var(f(datf$ba))/(length(f(datf$ba))-1)
     r_act = cor(f(datf$ba), f(datf$ba.pred))
+    r_act
   #  r_act = cor(f(datf$ba), f(datf$ba.pred))
       
     # b = summary(lm(datf$ba~datf$ba.pred))

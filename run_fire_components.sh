@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VARS=(  gfedl1  prl1  prl2  gppl1  pr  ts  cld  vp  pop  rdtot   )
-USEV=(       0     0     0      1   0   0    1   1    1      1   )
+VARS=(  gfedl1   gppm1  pr  ts  cld  vp  pop  rdtot   )
+USEV=(       1       1   0   0    1   1    0      0   )
 
 FOLDER=output_globe
 MODEL=CEAS
@@ -9,7 +9,7 @@ MODEL=CEAS
 ## Generate a unique code number for the model from the variables used.
 MODNUM="${USEV[@]}" 			# join USEV array serially (joins with spaces)
 MODNUM=$((2#${MODNUM// /}))		# remove spaces so MODNUM becomes a binary number, then convert to decimal
-MODEL=${MODEL}_mod$MODNUM.1		# Append decimal number to model name. Thus each model gets unique name
+MODEL=${MODEL}_mod$MODNUM.2		# Append decimal number to model name. Thus each model gets unique name
 echo MODEL CODE=$MODEL
 
 ##################################################################
@@ -61,7 +61,7 @@ cd ..
 
 # Run trained NN on data
 # ## nc2asc eval syntax: ./nc2asc eval <params_file> <model_dir> <weights_file> <vars_file>
-./nc2asc eval params_newdata/params_ip_global.r $FOLDER/$MODEL weights_ba.txt nn_vars.txt
+./nc2asc eval params_newdata/params_ip_global_eval.r $FOLDER/$MODEL weights_ba.txt nn_vars.txt
 ###mv fire.2003-1-1-2015-12-31.nc $FOLDER/$MODEL
 
 # Plot results

@@ -23,6 +23,8 @@ import pandas as pd
 #				          "EQAS (Equatorial Asia)",						// 13
 #				          "AUST (Australia and New Zealand)"};			// 14
 
+r1 = 11
+r2 = 11
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", action="store", dest="output_dir", default="output")
@@ -49,7 +51,7 @@ from variables import *	# Import variable IDs as in training data csv
 
 ID_ft = range(ID_ftmap1, ID_ftmap11+1)
 
-X_ids = [ID_gppm1s, ID_ts, ID_cld, ID_pop, ID_rdtot] + ID_ft
+X_ids = [ID_gfedl1, ID_gppm1, ID_cld, ID_vp] + ID_ft
 
 Y_id = ID_gfedclass
 	
@@ -95,7 +97,7 @@ def denseNet(x, W1,b1,Wo,bo):
 
 print("Reading training data...")
 df = pd.read_csv('../'+output_dir+'/train_forest.csv', engine='c')
-my_data = df.values[(df.values[:,ID_region] == 4) | (df.values[:,ID_region] == 5)]  # Region selection
+my_data = df.values[(df.values[:,ID_region] == r1) | (df.values[:,ID_region] == r2)]  # Region selection
 print("DONE")
 np.set_printoptions(precision=6, suppress=True)
 print("--------------")
@@ -121,12 +123,12 @@ print("--------------")
 
 print("Reading evalutation data...")
 dfe = pd.read_csv('../'+output_dir+'/eval_forest.csv', engine='c')
-eval_data = dfe.values[(dfe.values[:,ID_region] == 4) | (dfe.values[:,ID_region] == 5)]  # Region selection
+eval_data = dfe.values[(dfe.values[:,ID_region] == r1) | (dfe.values[:,ID_region] == r2)]  # Region selection
 print(eval_data[0:5, X_ids+[Y_id]].astype(float))
 
 print("Reading test data...")
 dfte = pd.read_csv('../'+output_dir+'/test_forest.csv', engine='c')
-test_data = dfte.values[(dfte.values[:,ID_region] == 4) | (dfte.values[:,ID_region] == 5)]  # Region selection
+test_data = dfte.values[(dfte.values[:,ID_region] == r1) | (dfte.values[:,ID_region] == r2)]  # Region selection
 print(test_data[0:5, X_ids+[Y_id]].astype(float))
 print("--------------")
 

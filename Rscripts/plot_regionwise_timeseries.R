@@ -3,29 +3,29 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe"
-model_dir = "mod4_cruts_rd4_cld_cruvp_pop"
+output_dir = "merged_models"
+model_dir = "nhaf_shaf"
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
 fire_pred_file = "fire.2003-1-1-2015-12-31.nc"
 
 start_date  = "2003-1-1"
-end_date    = "2015-11-30"
+end_date    = "2014-12-31"
 
-regions_names = c("BONA (Boreal North America)",
-                  "TENA (Temperate North America)",
-                  "CEAM (Central America)",
-                  "NHSA (Northern Hemisphere South America)",
-                  "SHSA (Southern Hemisphere South America)",
-                  "EURO (Europe)",
-                  "MIDE (Middle East)",
-                  "NHAF (Northern Hemisphere Africa)",
-                  "SHAF (Southern Hemisphere Africa)",
-                  "BOAS (Boreal Asia)",
-                  "CEAS (Central Asia)",
-                  "SEAS (Southeast Asia)",
-                  "EQAS (Equatorial Asia)",
-                  "AUST (Australia and New Zealand)")
+regions_names = c("BONA", #(Boreal North America)",
+                  "TENA", #(Temperate North America)",
+                  "CEAM", #(Central America)",
+                  "NHSA", #(Northern Hemisphere South America)",
+                  "SHSA", #(Southern Hemisphere South America)",
+                  "EURO", #(Europe)",
+                  "MIDE", #(Middle East)",
+                  "NHAF", #(Northern Hemisphere Africa)",
+                  "SHAF", #(Southern Hemisphere Africa)",
+                  "BOAS", #(Boreal Asia)",
+                  "CEAS", #(Central Asia)",
+                  "SEAS", #(Southeast Asia)",
+                  "EQAS", #(Equatorial Asia)",
+                  "AUST") #(Australia and New Zealand)")
 
 
 
@@ -71,10 +71,10 @@ slices_per_yr_obs = 365.2524/as.numeric(mean(diff(fire_obs$time[-length(fire_obs
 
 regions1 = array(data = rep(regions, length(fire_pred$time)), dim = c(dim(regions), length(fire_pred$time)) )
 
-png(filename = paste0("figures/regionwise_timeseries_1_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
+# png(filename = paste0("figures/regionwise_timeseries_1_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
 par(mfrow = c(7,1), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
 
-for (i in 1:7){
+for (i in 8:9){
   ts_pred = apply(X = fire_pred$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
   ts_obs = apply(X = fire_obs$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
   tmpcor = cor(ts_pred, ts_obs)
@@ -83,28 +83,33 @@ for (i in 1:7){
   ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = sum))
   tmpcor_yoy = cor(ts_pred_yr, ts_obs_yr)
   
-  plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0, 0.2+max(max(ts_obs), max(ts_pred))) )
-  points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
-  mtext(cex = 1, line = .5, text = sprintf("Region = %s | Correlations: Temporal = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+  # plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0, 0.2+max(max(ts_obs), max(ts_pred))) )
+  # points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
+  # mtext(cex = 1, line = .5, text = sprintf("Region = %s | Correlations: Temporal = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+
+  plot(y=ts_obs_yr, x=2003:2014, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(-0.2+min(min(ts_obs_yr), max(ts_pred_yr)), 0.2+max(max(ts_obs_yr), max(ts_pred_yr))) )
+  points(ts_pred_yr, x=2003:2014, type="l", col="red", lwd=2)
+  mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+  
 }
 
-dev.off()
+# dev.off()
 
-png(filename = paste0("figures/regionwise_timeseries_2_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
-par(mfrow = c(7,1), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
-
-for (i in 8:14){
-  ts_pred = apply(X = fire_pred$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
-  ts_obs = apply(X = fire_obs$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
-  tmpcor = cor(ts_pred, ts_obs)
-  
-  ts_obs_yr = (tapply(X = ts_obs, INDEX = strftime(fire_obs$time, "%Y"), FUN = sum))
-  ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = sum))
-  tmpcor_yoy = cor(ts_pred_yr, ts_obs_yr)
-  
-  plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0, 0.2+max(max(ts_obs), max(ts_pred))) )
-  points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
-  mtext(cex = 1, line = .5, text = sprintf("Region = %s | Correlations: Temporal = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
-}
-
-dev.off()
+# png(filename = paste0("figures/regionwise_timeseries_2_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
+# par(mfrow = c(7,1), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
+# 
+# for (i in 8:14){
+#   ts_pred = apply(X = fire_pred$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
+#   ts_obs = apply(X = fire_obs$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
+#   tmpcor = cor(ts_pred, ts_obs)
+#   
+#   ts_obs_yr = (tapply(X = ts_obs, INDEX = strftime(fire_obs$time, "%Y"), FUN = sum))
+#   ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = sum))
+#   tmpcor_yoy = cor(ts_pred_yr, ts_obs_yr)
+#   
+#   plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0, 0.2+max(max(ts_obs), max(ts_pred))) )
+#   points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
+#   mtext(cex = 1, line = .5, text = sprintf("Region = %s | Correlations: Temporal = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+# }
+# 
+# dev.off()
