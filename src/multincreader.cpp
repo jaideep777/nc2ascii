@@ -535,6 +535,18 @@ double MultiNcReader::nc_read_frame(int istep){
 			vars[i].readVar_reduce_mean(tstart, tend);
 //			vars[i].readVar_gt(tstart + hms2xhrs("6:0:0"), 0);
 		}
+		else if (ip_data_map[vars[i].varname].mode == "prev_month"){ 
+			double tstart1, tend1;
+			if (mon==1) {
+				tstart1 = ymd2gday(yr-1,12,1);
+				tend1   = ymd2gday(yr-1,12,31) + 23.9/24;
+			}
+			else{
+				tstart1 = ymd2gday(yr,mon-1,1);
+				tend1   = ymd2gday(yr,mon-1,31) + 23.9/24;
+			}
+			vars[i].readVar_reduce_mean(tstart1, tend1);
+		}
 		else if (ip_data_map[vars[i].varname].mode == "cyclic_yearly"){ 
 			int var_year = ip_data_map[vars[i].varname].start_yr;
 			int ts[6], te[6];
@@ -572,9 +584,15 @@ double MultiNcReader::nc_read_frame(int istep){
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}
+		else if (ip_data_map[vars[i].varname].mode == "yearly_lag04"){ 
+			double tstart1 = tstart - 4.0/12*365.2524;
+			double tend1   = tstart - 1;
+			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
+			vars[i].readVar_reduce_mean(tstart1, tend1);
+		}
 		else if (ip_data_map[vars[i].varname].mode == "yearly_lag06"){ 
-			double tstart1 = tstart - 1.5*365.2524;
-			double tend1   = tstart - 0.5*365.2524 -1;
+			double tstart1 = tstart - 6.0/12*365.2524;
+			double tend1   = tstart - 1;
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}

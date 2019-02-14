@@ -3,13 +3,13 @@ rm(list = ls())
 
 fire_dir = "~/codes/PureNN_fire"
 output_dir = "output_globe"#_runs_final"
-model_dir = "SA_mod48.1_pr_ts"
+model_dir = "NHAF_mod7.4_vp_pop_rdtot"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 cat(model_dir, "\n")
 
 region_name = strsplit(model_dir, split = "_")[[1]][1]
-regions_list = list(BONA = c(1), TCAM = c(2,3), SA = c(4,5), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14), GLOBE = 1:14)
+regions_list = list(BONA = c(1), TCAM = c(2,3), TENA=c(2), CEAM=c(3), SA = c(4,5), NHAF=c(8), SHAF = c(9), AF=c(8,9), CEAS= c(11), SEAS=c(12), AUS = c(14), GLOBE = 1:14)
 reg = get(region_name, regions_list)
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
@@ -60,7 +60,6 @@ plot_calib = function(datf, name, min=2e-4, max=2e-1, nscale = 200){
       log10(1e-7+x)
     }
     
-  #  par(mfrow = c(1,2), mar=c(4,4,1,1), oma=c(1,1,1,1), cex.axis=1.5, cex.lab=1.5)
     obs_ba.predc = tapply(X = datf$ba, INDEX = datf$baclass_pred, FUN=mean)
     pred_ba.predc = tapply(X = datf$ba.pred, INDEX = datf$baclass_pred, FUN=mean)
     obs_ba.predc = obs_ba.predc[-1]
@@ -92,8 +91,8 @@ plot_calib = function(datf, name, min=2e-4, max=2e-1, nscale = 200){
     
     b = summary(lm(datf$ba~datf$ba.pred))
     nmse_act = sum(f(datf$ba)-f(datf$ba.pred))^2/var(f(datf$ba))/(length(f(datf$ba))-1)
-    r_act = cor(f(datf$ba), f(datf$ba.pred))
-    r_act
+    r_act = cor(f(datf$ba), f(datf$ba.pred), use = "pairwise.complete.obs")
+    cat("cor=", r_act, "\n")
   #  r_act = cor(f(datf$ba), f(datf$ba.pred))
       
     # b = summary(lm(datf$ba~datf$ba.pred))
@@ -132,6 +131,7 @@ setwd(paste0(fire_dir,"/",output_dir,"/",model_dir,"/figures" ))
 png(filename = paste0(model_dir,"_PFTwise_calibration_",dataset,".png"), width = 400*6, height = 400*6, res=300)
 par(mfrow = c(4,3), mar=c(2,4,2,1), oma=c(4,4,1,1), cex.axis=1.5, cex.lab=1.5, mgp=c(4,1,0))
 plot_calib(datg, "All vegetation", nscale=50, max = 1)  # X
+
 for (i in c(1:11)){
   if (length(which(as.numeric(names(table(datg$dft)))==i)) > 0) plot_calib(datg[datg$dft==pfts_modis[i],], pftnames_modis[i], nscale=50, max = 1)  # X
   else plot(1,1, xaxt="n", yaxt="n", main=pftnames_modis[i])  
@@ -160,6 +160,10 @@ dev.off()
 # }
 # dev.off()
 
+
+# mod = with(datg, lm(log(1e-5+ba)~gfedl1+cld+gfedl1*cld*dft))
+# datf$ba.pred = exp(fitted(mod))-1e-5
+# plot_calib(datf, "All vegetation", nscale=50, max = 1)  # X
 
 
 # }

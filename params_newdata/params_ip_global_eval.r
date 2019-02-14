@@ -9,11 +9,13 @@ forcing_data_dir	/home/jaideep/Data
 # ts			ncep_reanalysis/ts
 ts			Fire
 vp			Fire
+vpt1		Fire
 # cru_tmx		CRU_TS4.02
 rh			Fire
 wsp			Fire
 # trmm		precip_trmm/combined/reordered_dims
 pr			Fire
+prt1		Fire
 prl1		Fire
 prl2		Fire
 # ndr			ndr_daily
@@ -25,6 +27,8 @@ gppm1s		Fire
 # ba		fire_BA/fire_fire_calib
 gfed		Fire
 gfedl1		Fire
+gfedl04		Fire
+gfedl06		Fire
 cld			Fire
 # prev_cld	MODISAL2_cloud_fraction/nc_merged
 pop			Fire
@@ -35,11 +39,13 @@ pop			Fire
 # ts		 K			air.sig995			2000		2015		1			1		linear			 bilinear
 ts	 	 degC		ts					2003		2015		13			1		linear			 none
 vp	 	 hPa		vp					2003		2015		13			1		linear			 none
+vpt1	 hPa		vp					2003		2015		13			1		linear			 none
 # cru_tmx	 degC		cru_ts4.02.tmx		1901		2017		117			1		linear			 coarsegrain
 rh		 %			rh					2003		2015		13			1		linear			 none
 wsp		 m/s		wsp					2003		2015		13			1		linear			 none
 # trmm	 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 coarsegrain
 pr		 mm/day		pr					2003		2015		13			1		linear			 none
+prt1	 mm/day		pr					2003		2015		13			1		linear			 none
 prl1	 mm/day		prl1				2003		2015		13			1		linear			 none
 prl2	 mm/day		prl2				2003		2015		13			1		linear			 none
 # ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	 bilinear
@@ -48,6 +54,8 @@ prl2	 mm/day		prl2				2003		2015		13			1		linear			 none
 # ba	 m2			burned_area_0.5deg	2001		2016		16			1		linear		 	 bilinear
 gfed	 %			gfed				2003 		2015		13			1		linear			 none
 gfedl1	 %			gfedl1				2003 		2015		13			1		linear			 none
+gfedl04	 %			gfedl04				2003 		2015		13			1		linear			 none
+gfedl06	 %			gfedl06				2003 		2015		13			1		linear			 none
 cld		 -			cld					2003		2015		13			1		linear			 none
 # prev_ba	 %			GFED_4.1s			1997 		2016		20			1		prev_yearly		 coarsegrain
 gppl1 	 gC/m2/s	gppl1				2003		2015		13			1		linear			 none

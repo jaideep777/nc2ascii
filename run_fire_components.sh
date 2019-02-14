@@ -1,15 +1,15 @@
 #!/bin/bash
 
-VARS=(  gfedl1   gppm1  pr  ts  cld  vp  pop  rdtot   )
-USEV=(       1       1   0   0    1   1    0      0   )
+VARS=(  gfedl1   gppl1  pr  ts  cld  vp  pop  rdtot   ftmap11 )
+USEV=(       0       1   1   1    1   1    1      1         1 )
 
 FOLDER=output_globe
-MODEL=CEAS
+MODEL=BONA
 
 ## Generate a unique code number for the model from the variables used.
 MODNUM="${USEV[@]}" 			# join USEV array serially (joins with spaces)
 MODNUM=$((2#${MODNUM// /}))		# remove spaces so MODNUM becomes a binary number, then convert to decimal
-MODEL=${MODEL}_mod$MODNUM.2		# Append decimal number to model name. Thus each model gets unique name
+MODEL=${MODEL}_mod$MODNUM.5		# Append decimal number to model name. Thus each model gets unique name
 echo MODEL CODE=$MODEL
 
 ##################################################################
@@ -30,7 +30,7 @@ for ((i=0; i<$N; ++i)); do
 done
 echo MODEL = $MODEL
 XID=$(sed '$ s/.$//' <<< $XID)				# remove the trailing comma
-XID=${XID}"] + ID_ft" 								# Add closing bracket
+XID=${XID}"] + ID_ft" 						# Add closing bracket + ID_ft + ID_croplands
 
 XIDLINE=$(grep -rn "X\_ids \= " tensorflow/nn_const_data_fire_v5_pureNN.py | cut -f1 -d:)	# Get the line that defines X_ids in the tensorflow code file
 
@@ -54,10 +54,10 @@ make
 #./nc2asc train params_newdata/params_ip_global.r
 #Rscript Rscripts/prepare_train_eval_datasets.R
 
-# Train NN
-cd tensorflow
-. runtf 
-cd ..
+## Train NN
+#cd tensorflow
+#. runtf 
+#cd ..
 
 # Run trained NN on data
 # ## nc2asc eval syntax: ./nc2asc eval <params_file> <model_dir> <weights_file> <vars_file>

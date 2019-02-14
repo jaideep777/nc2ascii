@@ -9,11 +9,13 @@ forcing_data_dir	/home/jaideep/Data
 # ts			ncep_reanalysis/ts
 ts			CRU_TS4.02
 vp			CRU_TS4.02
+vpt1		CRU_TS4.02
 # cru_tmx		CRU_TS4.02
 rh			ncep_reanalysis/rhum
 wsp			ncep_reanalysis/wsp
 # trmm		precip_trmm/combined/reordered_dims
 pr			precip_gpcp2.3
+prt1		precip_gpcp2.3
 prl1		precip_gpcp2.3
 prl2		precip_gpcp2.3
 # ndr			ndr_daily
@@ -25,6 +27,8 @@ gppm1s		GPP_modis
 # ba		fire_BA/fire_fire_calib
 gfed		Fire_BA_GFED4.1s/nc
 gfedl1		Fire_BA_GFED4.1s/nc
+gfedl04		Fire_BA_GFED4.1s/nc
+gfedl06		Fire_BA_GFED4.1s/nc
 cld			MODISAL2_cloud_fraction/nc_merged
 # prev_cld	MODISAL2_cloud_fraction/nc_merged
 pop			World_population_density
@@ -35,11 +39,13 @@ pop			World_population_density
 # ts		 K			air.sig995			2000		2015		1			1		linear			 bilinear
 ts	 	 degC		cru_ts4.02.tmp		1901		2017		117			1		linear			 coarsegrain
 vp	 	 hPa		cru_ts4.02.vap		1901		2017		117			1		linear			 coarsegrain
+vpt1	 hPa		cru_ts4.02.vap		1901		2017		117			1		prev_month		 coarsegrain
 # cru_tmx	 degC		cru_ts4.02.tmx		1901		2017		117			1		linear			 coarsegrain
 rh		 %			rhum.sig995			2000		2015		1			1		linear			 bilinear
 wsp		 m/s		wsp.sig995			2000		2015		1			1		linear			 bilinear
 # trmm	 mm/day		pr.trmm-perm		2000		2015		1			1		linear			 coarsegrain
 pr		 mm/day		gpcp.mon.mean		1979		2018		40			1		linear			 bilinear
+prt1	 mm/day		gpcp.mon.mean		1979		2018		40			1		prev_month		 bilinear
 prl1	 mm/day		gpcp.mon.mean		1979		2018		40			1		yearly_lag1		 bilinear
 prl2	 mm/day		gpcp.mon.mean		1979		2018		40			1		yearly_lag2		 bilinear
 # ndr		 W/m2/hr	ndr_daily			2000		2000		1			1		cyclic_yearly	 bilinear
@@ -48,6 +54,8 @@ prl2	 mm/day		gpcp.mon.mean		1979		2018		40			1		yearly_lag2		 bilinear
 # ba	 m2			burned_area_0.5deg	2001		2016		16			1		linear		 	 bilinear
 gfed	 %			GFED_4.1s			1997 		2016		20			1		linear			 coarsegrain
 gfedl1	 %			GFED_4.1s			1997 		2016		20			1		yearly_lag1		 coarsegrain
+gfedl04	 %			GFED_4.1s			1997 		2016		20			1		yearly_lag04		 coarsegrain
+gfedl06	 %			GFED_4.1s			1997 		2016		20			1		yearly_lag06		 coarsegrain
 cld		 -			MODAL2_M_CLD_FR		2001		2018		1			1		linear			 coarsegrain
 # prev_ba	 %			GFED_4.1s			1997 		2016		20			1		prev_yearly		 coarsegrain
 gppl1 	 gC/m2/s	gpp					2000		2015		16			1		yearly_lag1		 bilinear

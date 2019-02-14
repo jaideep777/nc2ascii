@@ -59,15 +59,17 @@ void init_eval(MultiNcReader &R, string wts_file, string out_dir){
 	}
 	
 	int nmonths = (R.gday_tf - R.gday_t0 + 1 + 0.5)/365.2524*12; 
-	vector <double> tvec;
-	if (R.time_step == "fortnightly"){
-		tvec.resize(2*nmonths);
-		for (int i=0; i<2*nmonths; ++i) tvec[i] = (R.gday_t0+6 + i*365.2524/12/2 - R.gday_tb)*24.0;
-	}
-	else if (R.time_step == "monthly"){
-		tvec.resize(nmonths);
-		for (int i=0; i<nmonths; ++i) tvec[i] = (R.gday_t0+14 + i*365.2524/12 - R.gday_tb)*24.0;
-	}
+	vector <double> tvec(R.nsteps);
+//	if (R.time_step == "fortnightly"){
+//		tvec.resize(2*nmonths);
+//		for (int i=0; i<2*nmonths; ++i) tvec[i] = (R.gday_t0+6 + i*365.2524/12/2 - R.gday_tb)*24.0;
+//	}
+//	else if (R.time_step == "monthly"){
+//		tvec.resize(nmonths);
+//		for (int i=0; i<nmonths; ++i) tvec[i] = (R.gday_t0+14 + i*365.2524/12 - R.gday_tb)*24.0;
+//	}
+	for (int t=0; t<R.nsteps; ++t) tvec[t] = (R.gday_t0 - R.gday_tb)*24.0 + t*R.dt;
+	
 
 	vector <float> levs1(1,0);
 	fire = gVar("fire", "-", "hours since "+gday2ymd(R.gday_tb));
@@ -88,8 +90,11 @@ void write_eval(MultiNcReader &R, string vars_file){
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
+		int r1 = 1;
+		int r2 = 1;
+		
 		int region = R.getVar("region")(ilon, ilat, 0);
-		if (region != 11 && region != 11) continue;
+		if (region != r1 && region != r2) continue;
 		
 		if (! R.ismasked(ilon,ilat)){ 
 			float ba_pred = 0;
@@ -98,7 +103,9 @@ void write_eval(MultiNcReader &R, string vars_file){
 			ifstream fin(vars_file.c_str());
 			string var;
 			while (fin >> var){
-				float val = R.getVar(var)(ilon, ilat, 0);
+				float val;
+				if (var == "ftmap11") val = R.getVar("ftmap")(ilon, ilat, 11);
+				else                  val = R.getVar(var)(ilon, ilat, 0);
 
 				if (var == "rdtp3")  val = log(val + 1);
 				if (var == "rdtp4")  val = log(val + 1);
@@ -107,6 +114,8 @@ void write_eval(MultiNcReader &R, string vars_file){
 				if (var == "gfedl1") val = log(val + 1e-5);
 				if (var == "pr")     val = log(val + 1);
 				if (var == "rdtot")  val = log(val + 1);
+				if (var == "gfedl06") val = log(val + 1e-5);
+				if (var == "gfedl04") val = log(val + 1e-5);
 
 				x.push_back(val);
 			}
@@ -128,7 +137,7 @@ void write_eval(MultiNcReader &R, string vars_file){
 
 ////			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
 
-			for (int ilev=1; ilev<R.getVar("ftmap").nlevs; ++ilev)
+			for (int ilev=0; ilev<R.getVar("ftmap").nlevs-1; ++ilev)	// this excludes ftmap11 (croplands)
 				x.push_back(R.getVar("ftmap")(ilon, ilat, ilev));
 
 

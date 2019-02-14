@@ -9,7 +9,7 @@ for i in "${ARR[@]}"; do
 eval $i
 
 FOLDER=output_globe
-MODEL=GLOBAL
+MODEL=NHAF
 
 ## Generate a unique code number for the model from the variables used.
 MODNUM="${USEV[@]}" 			# join USEV array serially (joins with spaces)

@@ -21,7 +21,10 @@ datm$trmm = NULL
 
 datm$pop = log(1+datm$pop)
 datm$gfedl1 = log(1e-5+datm$gfedl1)
+datm$gfedl06 = log(1e-5+datm$gfedl06)
+datm$gfedl04 = log(1e-5+datm$gfedl04)
 datm$pr = log(1+datm$pr)
+datm$prt1 = log(1+datm$prt1)
 datm$rdtot = log(1+datm$rdtot)
 
 datm$rdtp3 = log(1+datm$rdtp3)
@@ -60,19 +63,19 @@ ftypes = c('barren',
            'croplands',
            'mixed types')
 
-ftcols = c('grey',
-           'aquamarine',
-           'green4',
-           'darkseagreen1',
-           'green2',
-           'grey10',
-           'pink',
-           'pink3',
-           'darkolivegreen3',
-           'yellow1',
-           'darkgoldenrod1',
-           'magenta',
-           'grey10')
+ftcols = c('grey',        # barren
+           'aquamarine',  # NLE
+           'green4',      # BLE
+           'darkseagreen1',  # NLD
+           'green2',         # BLD
+           'grey10',        # Mixed
+           'pink',          # CLosed shrublands
+           'pink3',         # Open shrublands
+           'darkolivegreen3',  # Woody savannas
+           'yellow1',         # Savannas
+           'darkgoldenrod1',    # Grasslands
+           'magenta',          # croplands
+           'grey10')    # Mixed
 png(paste0(fire_dir, "/",output_dir,"/dft.png"), width = diff(xlim)*8, height = diff(ylim)*400/45)
 par(mfrow = c(1,2), cex.lab=1.2, cex.axis=1.2)
 with( dat_good[as.Date(dat_good$date) == as.Date("2003-01-16"),],

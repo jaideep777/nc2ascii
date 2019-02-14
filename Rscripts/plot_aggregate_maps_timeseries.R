@@ -6,7 +6,7 @@ library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
 output_dir = "merged_models"
-model_dir = "nhaf_shaf"
+model_dir = "climate_only"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 
@@ -87,7 +87,8 @@ mha_per_m2 = 0.0001/1e6
     fire_obs$time = as.Date("1997-1-15") + 365.2524/12*(0:239)
     fire_obs = NcClipTime(fire_obs,  start_date, end_date)
     fire_obs$data[is.na(fire_pred$data)] = NA
-
+    cell_area = t(matrix(ncol = length(fire_obs$lons), data = rep(lat_res*lon_res*cos(fire_obs$lats*pi/180), length(fire_obs$lons) ), byrow = F ))
+    
     slices_per_yr_obs = 365.2524/as.numeric(mean(diff(fire_obs$time[-length(fire_obs$time)])))
 
     ts_pred = apply(X = fire_pred$data, FUN = function(x){sum(x*cell_area, na.rm=T)}, MARGIN = 3)*0.0001/1e6
@@ -121,18 +122,24 @@ mha_per_m2 = 0.0001/1e6
 
     # spatcor = matrix(nrow = dim(fire_pred$data)[1], ncol = dim(fire_pred$data)[2])
     # spatcor_yoy = matrix(nrow = dim(fire_pred$data)[1], ncol = dim(fire_pred$data)[2])
+    # spatcor_acf = matrix(nrow = dim(fire_pred$data)[1], ncol = dim(fire_pred$data)[2])
     # for (i in 1:dim(spatcor)[1]){
     #   for (j in 1:dim(spatcor)[2]){
     #     spatcor[i,j] = cor(fire_pred$data[i,j,], fire_obs$data[i,j,])
     #     spatcor_yoy[i,j] = cor(tapply(X = fire_obs$data[i,j,], INDEX = strftime(fire_obs$time, "%Y"), FUN = mean)*12,
     #                            tapply(X = fire_pred$data[i,j,], INDEX = strftime(fire_pred$time, "%Y"), FUN = mean)*12
     #                           )
+    #     spatcor_acf[i,j] = acf(tapply(X = fire_obs$data[i,j,], INDEX = strftime(fire_obs$time, "%Y"), FUN = mean)*12,
+    #                            lag.max = 1, na.action = na.pass, plot=F)[[1]][2]
     #   }
     # }
-    # image(t(matrix(seq(-1,1,length.out=100), nrow=1)), col=colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
-    # image(spatcor, col = colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
-    # image(spatcor_yoy, col = colorRampPalette(c("red", "white", "blue"))(100), zlim=c(-1,1))
-    
+    # cols_s = colorRampPalette(c("red", "orange" ,"white", "cyan" ,"blue"))(100)
+    # layout(rbind(1,1,1,1,2,2,2,2,3))
+    # par(mar=c(4,4,1,1), oma=c(1,1,1,1)*0.2, cex.lab=1.8, cex.axis=1.8)
+    # image(z=spatcor_acf, x=fire_pred$lons, y=fire_pred$lats, col = cols_s, zlim=c(-1,1), xlab="Lon", ylab="Lat")
+    # image(z=spatcor_yoy, x=fire_pred$lons, y=fire_pred$lats, col = cols_s, zlim=c(-1,1), xlab="Lon", ylab="Lat")
+    # image(z=t(matrix(seq(-1,1,length.out=100), nrow=1)), x=seq(-1,1,length.out=100), col=cols_s, zlim=c(-1,1), yaxt="n", xlab="Correlation")
+
     
     # cols = createPalette(c("black", "blue","green3","yellow","red"),c(0,25,50,100,1000), n = 1000)
     # cols = createPalette(c("black", "black", "black","blue","mediumspringgreen","yellow","orange", "red","brown"),c(0,0.2,0.5,1,2,5,10,20,50,100)*1000, n = 1000)
@@ -149,6 +156,16 @@ mha_per_m2 = 0.0001/1e6
                     3,3,
                     3,3,
                     3,3), ncol=2,byrow = T))  # vertical
+    layout(matrix(c(1,2,
+                    1,2,
+                    3,3,
+                    3,3,
+                    3,3,
+                    # 3,3,
+                    # 2,3,
+                    4,4,
+                    4,4,
+                    4,4), ncol=2,byrow = T))  # vertical
     par(mar=c(4,5,4,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
 
     plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area")
@@ -156,7 +173,16 @@ mha_per_m2 = 0.0001/1e6
     mtext(cex = 1, line = .5, text = sprintf("Correlations: Temporal = %.2f, IA = %.2f, Spatial = %.2f", tmpcor, tmpcor_yoy, spacor))
     # axis(side = 1, labels = strftime(fire_obs$time, format="%m")[seq(1,200,by=2)], at=fire_obs$time[seq(1,200,by=2)])
     # par(mfrow=c(1,2))
-
+    plot(y=ts_obs_yr, x=unique(strftime(fire_obs$time, "%Y")), col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area")
+    mod_obs = lm(ts_obs_yr~as.numeric(unique(strftime(fire_obs$time, "%Y")))) 
+    mod_pred= lm(ts_pred_yr~as.numeric(unique(strftime(fire_pred$time, "%Y"))))
+    abline(mod_obs, col="orange3")
+    points(ts_pred_yr, x=unique(strftime(fire_pred$time, "%Y")), type="l", col="red", lwd=2)
+    abline(mod_pred, col="red1")
+    mtext(cex = 1, line = .5, text = sprintf("Obs trend = %.2f, Pred trend = %.2f", mod_obs$coefficients[2], mod_pred$coefficients[2] ))
+    
+    
+    
     image(fire_pred$lon, fire_pred$lat, slice_pred/cell_area, col = cols, zlim = c(0,1), xlab="Longitude",ylab = "Latitude")
     mtext(cex = 1, line = .5, text = sprintf("Total BA = %.2f Mha", sum(slice_pred, na.rm=T)*0.0001/1e6))
     mtext(cex = 1, line = 2.3, text = "Predicted", col="blue")
@@ -178,8 +204,8 @@ mha_per_m2 = 0.0001/1e6
     mtext(text = "All seasons",side = 3,line = 1,outer = T)
     dev.off()
 
-    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n")
-    cat(tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\n", file = "metrics.txt")
-#   }
+    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\n")
+    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\n", file = "metrics.txt")
+    #   }
 #   cat("\n\n\n")
 # }
