@@ -18,19 +18,24 @@ datm[datm > 1e19] = NA
 ba_classes = c(0, seq(-6,0,by=0.25))
 datm$gfedclass = sapply(log10(datm$gfed),FUN = function(x){length(which(x>ba_classes))})
 datm$trmm = NULL
+datm[as.Date(datm$date) < as.Date("2002-1-1"), "gppl1"] = NA
 
 datm$pop = log(1+datm$pop)
-datm$gfedl1 = log(1e-5+datm$gfedl1)
-datm$gfedl06 = log(1e-5+datm$gfedl06)
-datm$gfedl04 = log(1e-5+datm$gfedl04)
+# datm$gfedl1 = log(1e-5+datm$gfedl1)
+# datm$gfedl06 = log(1e-5+datm$gfedl06)
+# datm$gfedl04 = log(1e-5+datm$gfedl04)
 datm$pr = log(1+datm$pr)
-datm$prt1 = log(1+datm$prt1)
+# datm$prt1 = log(1+datm$prt1)
 datm$rdtot = log(1+datm$rdtot)
 
-datm$rdtp3 = log(1+datm$rdtp3)
-datm$rdtp4 = log(1+datm$rdtp4)
+# datm$rdtp3 = log(1+datm$rdtp3)
+# datm$rdtp4 = log(1+datm$rdtp4)
 
-# cru_rh =  datm$cru_vp*100 / (610.78 * exp( datm$cru_ts / ( datm$cru_ts + 238.3 ) * 17.2694 ))
+# vp_sat = 6.1094 * exp( datm$ts / ( datm$ts + 243.4 ) * 17.625 )
+# datm$rh = datm$vp / vp_sat
+# datm$rh[datm$rh > 1] = 1
+
+# cru_rh =  datm$cru_vp*100 / )
 
 threshold_forest_frac = 0.3
 
@@ -132,7 +137,7 @@ plot.cut.means_obs = function(obs, var, min, max, col.obs, col.pred, ...){
 }
 
 
-ids_test = which( (as.Date(datf$date) >= as.Date("2004-1-1") & as.Date(datf$date) <= as.Date("2007-12-31")) )
+ids_test = which( (as.Date(datf$date) >= as.Date("2005-1-1") & as.Date(datf$date) <= as.Date("2007-12-31")) )
                    # | datf$lon < -25)
 # ids_test = which( (as.Date(datf$date) >= as.Date("2008-1-1") & as.Date(datf$date) <= as.Date("2011-12-31")) )
 # ids_test = which(datf$date >= as.Date("2013-1-1"))

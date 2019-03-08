@@ -5,16 +5,21 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "merged_models"
-model_dir = "climate_only"
+output_dir = "output_globe_trial_2_gfedl06"
+model_dir = "AF_mod156.1_gfedl06_ts_cld_vp"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
-fire_pred_file = "fire.2003-1-1-2015-12-31.nc"
+fire_pred_file = "fire.2002-1-1-2015-12-31.nc"
 
-start_date  = "2003-1-1"
-end_date    = "2014-12-31"
+start_date  = "2002-1-1"
+end_date    = "2015-12-31"
+
+# fire_pred_file = paste0("fire.", start_date, "-", end_date, ".nc")
+
+start_yr = as.numeric(strftime(start_date, "%Y"))
+end_yr = as.numeric(strftime(end_date, "%Y"))
 
 # Get model_dir from command line
 args = commandArgs(trailingOnly = T)
@@ -66,8 +71,8 @@ mha_per_m2 = 0.0001/1e6
 
     fire_pred_filename = paste0(fire_dir,"/",output_dir, "/", model_dir, "/", fire_pred_file)
     fire_pred = NcCreateOneShot(filename = fire_pred_filename, var_name = "fire")
-    fire_pred$time = fire_pred$time - 15
-    fire_pred$time = as.Date("2003-1-15") + 365.2524/12*(0:156)
+#    fire_pred$time = fire_pred$time - 15
+#    fire_pred$time = as.Date("2003-1-15") + 365.2524/12*(0:156)
     fire_pred = NcClipTime(fire_pred, start_date, end_date)
     fire_pred$data = fire_pred$data - 0.000
     fire_pred$data[fire_pred$data < 0.00] = 0
@@ -104,6 +109,11 @@ mha_per_m2 = 0.0001/1e6
     ts_pred_yr = (tapply(X = ts_pred, INDEX = strftime(fire_pred$time, "%Y"), FUN = mean))*12
     tmpcor_yoy = cor(ts_pred_yr, ts_obs_yr)
 
+    mod_obs = lm(ts_obs_yr~as.numeric(unique(strftime(fire_obs$time, "%Y")))) 
+    mod_pred= lm(ts_pred_yr~as.numeric(unique(strftime(fire_pred$time, "%Y"))))
+    
+    tmpcor_yoy_det = cor(ts_pred_yr-fitted(mod_pred), ts_obs_yr-fitted(mod_obs))
+    
     # plot(ts_obs_yr~unique(strftime(obs_t, "%Y")), ylim=c(0,75))
     # points(ts_pred_yr~unique(strftime(obs_t, "%Y")), type="l", col="blue")
     # plot(ts_obs_yr~ts_pred_yr)
@@ -173,15 +183,12 @@ mha_per_m2 = 0.0001/1e6
     mtext(cex = 1, line = .5, text = sprintf("Correlations: Temporal = %.2f, IA = %.2f, Spatial = %.2f", tmpcor, tmpcor_yoy, spacor))
     # axis(side = 1, labels = strftime(fire_obs$time, format="%m")[seq(1,200,by=2)], at=fire_obs$time[seq(1,200,by=2)])
     # par(mfrow=c(1,2))
-    plot(y=ts_obs_yr, x=unique(strftime(fire_obs$time, "%Y")), col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area")
-    mod_obs = lm(ts_obs_yr~as.numeric(unique(strftime(fire_obs$time, "%Y")))) 
-    mod_pred= lm(ts_pred_yr~as.numeric(unique(strftime(fire_pred$time, "%Y"))))
+
+    plot(y=ts_obs_yr, x=unique(strftime(fire_obs$time, "%Y")), col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(min(c(ts_obs_yr, ts_pred_yr))-1, 1+max(c(ts_obs_yr, ts_pred_yr))) )
     abline(mod_obs, col="orange3")
     points(ts_pred_yr, x=unique(strftime(fire_pred$time, "%Y")), type="l", col="red", lwd=2)
     abline(mod_pred, col="red1")
     mtext(cex = 1, line = .5, text = sprintf("Obs trend = %.2f, Pred trend = %.2f", mod_obs$coefficients[2], mod_pred$coefficients[2] ))
-    
-    
     
     image(fire_pred$lon, fire_pred$lat, slice_pred/cell_area, col = cols, zlim = c(0,1), xlab="Longitude",ylab = "Latitude")
     mtext(cex = 1, line = .5, text = sprintf("Total BA = %.2f Mha", sum(slice_pred, na.rm=T)*0.0001/1e6))
@@ -204,8 +211,8 @@ mha_per_m2 = 0.0001/1e6
     mtext(text = "All seasons",side = 3,line = 1,outer = T)
     dev.off()
 
-    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\n")
-    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\n", file = "metrics.txt")
+    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\t", tmpcor_yoy_det, "\n")
+    cat(model_dir, "\t", tmpcor, "\t", tmpcor_yoy, "\t", spacor, "\t", sum(slice_pred, na.rm=T)*0.0001/1e6, "\t", mod_pred$coefficients[2], "\t", tmpcor_yoy_det, "\n", file = "metrics.txt")  
     #   }
 #   cat("\n\n\n")
 # }

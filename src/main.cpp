@@ -90,8 +90,8 @@ void write_eval(MultiNcReader &R, string vars_file){
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
-		int r1 = 1;
-		int r2 = 1;
+		int r1 = 10;
+		int r2 = 10;
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
 		if (region != r1 && region != r2) continue;
@@ -104,8 +104,9 @@ void write_eval(MultiNcReader &R, string vars_file){
 			string var;
 			while (fin >> var){
 				float val;
-				if (var == "ftmap11") val = R.getVar("ftmap")(ilon, ilat, 11);
-				else                  val = R.getVar(var)(ilon, ilat, 0);
+				if      (var == "ftmap11") val = R.getVar("ftmap")(ilon, ilat, 11);
+				else if (var == "lat")     val = R.mglats[ilat];
+				else                       val = R.getVar(var)(ilon, ilat, 0);
 
 				if (var == "rdtp3")  val = log(val + 1);
 				if (var == "rdtp4")  val = log(val + 1);
@@ -116,7 +117,8 @@ void write_eval(MultiNcReader &R, string vars_file){
 				if (var == "rdtot")  val = log(val + 1);
 				if (var == "gfedl06") val = log(val + 1e-5);
 				if (var == "gfedl04") val = log(val + 1e-5);
-
+				
+				
 				x.push_back(val);
 			}
 
@@ -232,9 +234,10 @@ int main(int argc, char ** argv){
 
 	main_run(R, vars_file);
 
+	if (eval) fire.closeNcOutputStream();
+
 	R.close();
 
-	if (eval) fire.closeNcOutputStream();
 	
 	return 0;
 }

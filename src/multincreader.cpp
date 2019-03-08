@@ -476,7 +476,12 @@ int MultiNcReader::close(){
 	
 	// close nc output file
 	if (ncout) {
-		for (int i=0; i<vars.size(); ++i) vars[i].closeNcOutputStream();
+		log_fout << "!! Closing Output streams: ";
+		for (int i=0; i<vars.size(); ++i) {
+			log_fout << vars[i].varname << ", ";
+			vars[i].closeNcOutputStream();
+		}
+		log_fout << "- Done." << endl;
 	}
 	
 	// close log files
@@ -636,9 +641,9 @@ int MultiNcReader::ascii_write_frame(double gt){
 int MultiNcReader::nc_write_frame(int islice){
 	for (int i=0; i<vars.size(); ++i){
 		string vname = vars[i].varname;
-		if (vars[i].lwrite){
+//		if (vars[i].lwrite){
 			vars[i].writeVar(islice);
-		}
+//		}
 	}
 }
 

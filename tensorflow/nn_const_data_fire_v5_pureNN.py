@@ -23,8 +23,8 @@ import pandas as pd
 #				          "EQAS (Equatorial Asia)",						// 13
 #				          "AUST (Australia and New Zealand)"};			// 14
 
-r1 = 1
-r2 = 1
+r1 = 10
+r2 = 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", action="store", dest="output_dir", default="output")
@@ -51,7 +51,7 @@ from variables import *	# Import variable IDs as in training data csv
 
 ID_ft = range(ID_ftmap0, ID_ftmap11)	# this will exclude ftmap11 (cropland)
 
-X_ids = [ID_gppl1, ID_pr, ID_ts, ID_cld, ID_vp, ID_pop, ID_rdtot, ID_ftmap11] + ID_ft
+X_ids = [ID_gppm1, ID_ts, ID_vp] + ID_ft
 
 Y_id = ID_gfedclass
 	

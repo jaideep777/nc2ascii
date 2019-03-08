@@ -4,13 +4,13 @@ library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
 output_dir = "output_globe"
-model_dir = "AF_mod256.5_gfedl1"
+model_dir = "AF_mod60.5_ts_cld_vp_pop"
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
-fire_pred_file = "fire.2003-1-1-2015-12-31.nc"
+fire_pred_file = "fire.2001-1-1-2016-12-31.nc"
 
-start_date  = "2003-1-1"
-end_date    = "2014-12-31"
+start_date  = "2001-1-1"
+end_date    = "2016-12-31"
 
 regions_names = c("BONA", #(Boreal North America)",
                   "TENA", #(Temperate North America)",
@@ -63,8 +63,8 @@ dft = ncvar_get(dft_file, "ft")
 
 fire_pred_filename = paste0(fire_dir,"/",output_dir, "/", model_dir, "/", fire_pred_file)
 fire_pred = NcCreateOneShot(filename = fire_pred_filename, var_name = "fire")
-fire_pred$time = fire_pred$time - 15
-fire_pred$time = as.Date("2003-1-15") + 365.2524/12*(0:155)
+# fire_pred$time = fire_pred$time - 15
+# fire_pred$time = as.Date("2003-1-15") + 365.2524/12*(0:155)
 fire_pred = NcClipTime(fire_pred, start_date, end_date)
 fire_pred$data = fire_pred$data - 0.000
 fire_pred$data[fire_pred$data < 0.00] = 0
@@ -112,16 +112,18 @@ for (i in 8:9){
   # points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
   # mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
   
-  mod_obs = lm(ts_obs_yr~seq(2003,2014))
-  mod_pred = lm(ts_pred_yr~seq(2003,2014))
+  mod_obs = lm(ts_obs_yr~seq(2001,2016))
+  mod_pred = lm(ts_pred_yr~seq(2001,2016))
+
+  # plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs, ts_pred)), 1.1*max(c(ts_obs, ts_pred))) )
   
-  plot(y=ts_obs_yr, x=2003:2014, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs_yr, ts_pred_yr)), 1.1*max(c(ts_obs_yr, ts_pred_yr))) )
-  abline(mod_obs, col="orange")
-  points(ts_pred_yr, x=2003:2014, type="l", col="red", lwd=2)
-  abline(mod_pred, col="red")
-  mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
-  # mtext(cex = 1, line = .5, text = sprintf("%s, %s | T = %.2f, IA = %.2f", regions_names[i], pftnames_modis[ft], tmpcor, tmpcor_yoy))
-  # }  
+  plot(y=ts_obs_yr, x=2001:2016, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs_yr, ts_pred_yr)), 1.1*max(c(ts_obs_yr, ts_pred_yr))) )
+  # abline(mod_obs, col="orange")
+  # points(ts_pred_yr, x=2001:2016, type="l", col="red", lwd=2)
+  # abline(mod_pred, col="red")
+  # mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+  # # mtext(cex = 1, line = .5, text = sprintf("%s, %s | T = %.2f, IA = %.2f", regions_names[i], pftnames_modis[ft], tmpcor, tmpcor_yoy))
+  # # }  
   
   
   # plot(y=ts_obs_yr-fitted(mod_obs), x=2003:2014, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area" )
@@ -153,3 +155,8 @@ for (i in 8:9){
 # for (ft in 1:11){
 # plot(as.numeric(spatcor[dft==ft])~as.numeric(x[dft==ft]), pch=19, main=pftnames_modis[ft], xlim=c(0,1), ylim=c(-1,1))
 # }
+
+
+par(mfrow=c(2,1))
+
+
