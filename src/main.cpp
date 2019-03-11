@@ -90,8 +90,8 @@ void write_eval(MultiNcReader &R, string vars_file){
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
-		int r1 = 10;
-		int r2 = 10;
+		int r1 = 12;
+		int r2 = 12;
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
 		if (region != r1 && region != r2) continue;

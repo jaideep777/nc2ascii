@@ -5,8 +5,8 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe_trial_2_gfedl06"
-model_dir = "AF_mod156.1_gfedl06_ts_cld_vp"
+output_dir = "merged_models"
+model_dir = "minimal_v5"
 
 # for (model_dir in list.files(path = paste0(fire_dir,"/",output_dir), no.. = T, pattern = "mod")){
 

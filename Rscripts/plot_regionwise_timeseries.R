@@ -3,14 +3,14 @@ library(ncdf4)
 library(chron)
 
 fire_dir = "~/codes/PureNN_fire"
-output_dir = "output_globe"
-model_dir = "AF_mod60.5_ts_cld_vp_pop"
+output_dir = "merged_models"
+model_dir = "minimal_v5"
 
 fire_obs_file = "/home/jaideep/Data/Fire_BA_GFED4.1s/nc/GFED_4.1s_1deg.1997-2016.nc"  # Need absolute path here
-fire_pred_file = "fire.2001-1-1-2016-12-31.nc"
+fire_pred_file = "fire.2002-1-1-2015-12-31.nc"
 
-start_date  = "2001-1-1"
-end_date    = "2016-12-31"
+start_date  = "2002-1-1"
+end_date    = "2015-12-31"
 
 regions_names = c("BONA", #(Boreal North America)",
                   "TENA", #(Temperate North America)",
@@ -90,10 +90,10 @@ slices_per_yr_obs = 365.2524/as.numeric(mean(diff(fire_obs$time[-length(fire_obs
 
 regions1 = array(data = rep(regions, length(fire_pred$time)), dim = c(dim(regions), length(fire_pred$time)) )
 
-# png(filename = paste0("figures/regionwise_timeseries_1_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
-# par(mfrow = c(7,2), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
+png(filename = paste0("figures/regionwise_timeseries_1_", "(",model_dir,").png"),res = 300,width = 400*5,height = 844*5) # 520 for sasplus, india, 460 for SAS 
+par(mfrow = c(7,2), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)
 
-for (i in 8:9){
+for (i in 1:14){
   # for(ft in 1:11){
   ts_pred = apply(X = fire_pred$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
   ts_obs = apply(X = fire_obs$data, FUN = function(x){sum((x*cell_area)[regions == i], na.rm=T)}, MARGIN = 3)*0.0001/1e6
@@ -112,16 +112,16 @@ for (i in 8:9){
   # points(ts_pred, x= fire_pred$time, type="l", col="red", lwd=2)
   # mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
   
-  mod_obs = lm(ts_obs_yr~seq(2001,2016))
-  mod_pred = lm(ts_pred_yr~seq(2001,2016))
+  mod_obs = lm(ts_obs_yr~seq(2002,2015))
+  mod_pred = lm(ts_pred_yr~seq(2002,2015))
 
   # plot(y=ts_obs, x=fire_obs$time, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs, ts_pred)), 1.1*max(c(ts_obs, ts_pred))) )
   
-  plot(y=ts_obs_yr, x=2001:2016, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs_yr, ts_pred_yr)), 1.1*max(c(ts_obs_yr, ts_pred_yr))) )
-  # abline(mod_obs, col="orange")
-  # points(ts_pred_yr, x=2001:2016, type="l", col="red", lwd=2)
-  # abline(mod_pred, col="red")
-  # mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
+  plot(y=ts_obs_yr, x=2002:2015, col="orange2", type="o", cex=1.2, lwd=1.5, xlab="", ylab="Burned area", ylim=c(0.9*min(c(ts_obs_yr, ts_pred_yr)), 1.1*max(c(ts_obs_yr, ts_pred_yr))) )
+  abline(mod_obs, col="orange")
+  points(ts_pred_yr, x=2002:2015, type="l", col="red", lwd=2)
+  abline(mod_pred, col="red")
+  mtext(cex = 1, line = .5, text = sprintf("%s | T = %.2f, IA = %.2f", regions_names[i], tmpcor, tmpcor_yoy))
   # # mtext(cex = 1, line = .5, text = sprintf("%s, %s | T = %.2f, IA = %.2f", regions_names[i], pftnames_modis[ft], tmpcor, tmpcor_yoy))
   # # }  
   
@@ -131,7 +131,7 @@ for (i in 8:9){
   
 }
 
-# dev.off()
+dev.off()
 
 # png(filename = paste0("figures/regionwise_timeseries_2_", "(",model_dir,").png"),res = 300,width = 844*3,height = 844*3) # 520 for sasplus, india, 460 for SAS 
 # par(mfrow = c(7,1), mar=c(4,5,1,1), oma=c(1,1,1,1), cex.lab=1.5, cex.axis=1.5)

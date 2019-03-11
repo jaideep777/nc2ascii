@@ -1,24 +1,29 @@
 #!/bin/bash
 
 OUTDIR=output_globe
-#MERGED_MOD='NHAF_mod140.2_gfedl1_cld_vp'	# best
-MERGED_MOD=AF_mod56.5_ts_cld_vp 	# minimal
-MERGED_TP=climate_only
+#MERGED_MOD='NHAF_mod84.5_pr_cld_pop'	# best
+MERGED_MOD='NHAF_mod84.5_pr_cld_pop' 	# minimal
+MERGED_TP=minimal_v5
 
-#best 
-MODELS=(NHAF_mod14.5_vp_pop_rdtot 
-SHAF_mod90.4_gppm1s_ts_cld_pop 
-)
+##best 
+#MODELS=('SHAF_mod176.5_gppl1_ts_cld'
+#'SA_mod502.5_gpp_gppm1s_pr_ts_cld_pop_rdtot'
+#'SEAS_mod510.5_gpp_gppm1_pr_ts_cld_vp_pop_rdtot'
+#'TCAM_mod497.5_gpp_gppl1_pr_ts_cld_ftmap11'
+#'BONA_mod504.5_gpp_gppl1_pr_ts_cld_vp'
+#'AUS_mod440.5_gpp_gppl1_ts_cld_vp'
+#'CEAS_mod216.5_gppl1_pr_cld_vp'
+#'BOAS_mod232.5_gppm1_pr_ts_vp')
 
 #minimal
-#MODELS=('SHAF_mod152.2_gfedl1_ts_cld'
-#		'SA_mod48.1_pr_ts'
-#		'SEAS_mod216.2_gfedl1_gppm1_ts_cld'
-#		'CEAM_mod112.2_gppl1_pr_ts'
-#		'TENA_mod240.2_gfedl1_gppl1_pr_ts'
-#		'BONA_mod164.1_gfedl1_pr_vp'
-#		'AUS_mod93.2_gppl1_ts_cld_vp_rdtot'
-#		'CEAS_mod200.2_gfedl1_gppm1_cld')
+MODELS=('SHAF_mod176.5_gppl1_ts_cld'
+'SA_mod496.5_gpp_gppm1s_pr_ts_cld'
+'SEAS_mod500.5_gpp_gppm1_pr_ts_cld_pop'
+'TCAM_mod480.5_gpp_gppl1_pr_ts'
+'BONA_mod448.5_gpp_gppl1_pr'
+'AUS_mod400.5_gpp_gppl1_cld'
+'CEAS_mod216.5_gppl1_pr_cld_vp'
+'BOAS_mod232.5_gppm1_pr_ts_vp')
 
 cp ${OUTDIR}/$MERGED_MOD/fire.200*.nc merged_models/${MERGED_TP}/tmp.nc
 for mod in "${MODELS[@]}"; do

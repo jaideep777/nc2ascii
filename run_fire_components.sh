@@ -1,10 +1,10 @@
 #!/bin/bash
 
-VARS=(  gpp   gppm1  pr  ts  cld  vp  pop  rdtot   ftmap11 )
-USEV=(    0       1   0   1    0   1    0      0         0 )
+VARS=(  gpp   gppl1  pr  ts  cld  vp  pop  rdtot   ftmap11 )
+USEV=(    1       1   1   1    1   1    1      1         0 )
 
 FOLDER=output_globe
-MODEL=BOAS
+MODEL=SEAS
 
 ## Generate a unique code number for the model from the variables used.
 MODNUM="${USEV[@]}" 			# join USEV array serially (joins with spaces)
