@@ -32,6 +32,7 @@ gfedl06		Fire
 cld			Fire
 # prev_cld	MODISAL2_cloud_fraction/nc_merged
 pop			Fire
+# ftmap		Fire
 	
 
 > FORCING_VARIABLE_DATA
@@ -66,6 +67,8 @@ gppm1s 	 gC/m2/s	gppm1s				2001		2015		15			1		linear		 	 none
 # prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 coarsegrain		
 # prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
 pop		 - 			pop					2001		2015		15			1		linear			 none
+# ftmap	 - 			ftmap				2002		2015		14			13		linear			 none
+
 
 # file name will be taken as "prefix.yyyy.nc" or "prefix.yyyy-yyyy.nc"
 # value types: ins (instantaneous), sum, avg (not used as of now)

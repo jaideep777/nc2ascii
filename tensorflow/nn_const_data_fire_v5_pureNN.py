@@ -23,8 +23,9 @@ import pandas as pd
 #				          "EQAS (Equatorial Asia)",						// 13
 #				          "AUST (Australia and New Zealand)"};			// 14
 
-r1 = 12
-r2 = 12
+
+#r1 = 6
+#r2 = 7
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", action="store", dest="output_dir", default="output")
@@ -46,12 +47,16 @@ nn_h1 = 12
 
 import sys
 sys.path.insert(0, '../'+output_dir)
+sys.path.insert(0, '../'+output_dir+'/'+model_dir)
+
+from regions import *
 from variables import *	# Import variable IDs as in training data csv
 
+print("regions = ", r1, " ", r2)
 
-ID_ft = range(ID_ftmap0, ID_ftmap11)	# this will exclude ftmap11 (cropland)
+ID_ft = range(ID_ftmap1, ID_ftmap11) #+ [ID_ftmap12]	# this will exclude ftmap11 (cropland) and Barren (0)
 
-X_ids = [ID_gpp, ID_gppl1, ID_pr, ID_ts, ID_cld, ID_vp, ID_pop, ID_rdtot] + ID_ft
+X_ids = [ID_gpp, ID_gppl1, ID_ts] + ID_ft
 
 Y_id = ID_gfedclass
 	
@@ -112,7 +117,7 @@ print("--------------")
 
 
 Xmeans = np.mean(my_data[:,X_ids].astype(float), axis=0)
-Xstd = np.std(my_data[:,X_ids].astype(float), axis=0)
+Xstd = np.std(my_data[:,X_ids].astype(float), axis=0)+1e-8
 print("Input means/sd:");
 print(Xmeans)
 print("--------------")

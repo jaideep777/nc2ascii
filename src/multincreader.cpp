@@ -577,6 +577,12 @@ double MultiNcReader::nc_read_frame(int istep){
 			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
 			vars[i].readVar_reduce_mean(tstart1, tend1);
 		}
+		else if (ip_data_map[vars[i].varname].mode == "yearly"){ 
+			double tstart1 = ymd2gday(yr,1,1);
+			double tend1   = ymd2gday(yr,12,31) + 23.9/24;
+			// cout << vars[i].varname << " " << gt2string(tstart) << " --> " << gt2string(tstart1) << ", " << gt2string(tend) << " --> " << gt2string(tend) << "\n";
+			vars[i].readVar_reduce_mean(tstart1, tend1);
+		}
 		else if (ip_data_map[vars[i].varname].mode == "yearly_lag1"){ 
 			double tstart1 = tstart - 365.2524;
 			double tend1   = tstart - 1;

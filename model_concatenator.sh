@@ -13,7 +13,9 @@ MERGED_TP=minimal_v5
 #'BONA_mod504.5_gpp_gppl1_pr_ts_cld_vp'
 #'AUS_mod440.5_gpp_gppl1_ts_cld_vp'
 #'CEAS_mod216.5_gppl1_pr_cld_vp'
-#'BOAS_mod232.5_gppm1_pr_ts_vp')
+#'BOAS_mod232.5_gppm1_pr_ts_vp'
+#'EQAS_mod112.5_pr_ts_cld'
+#'EUME_mod80.5_pr_cld' )
 
 #minimal
 MODELS=('SHAF_mod176.5_gppl1_ts_cld'
@@ -23,7 +25,9 @@ MODELS=('SHAF_mod176.5_gppl1_ts_cld'
 'BONA_mod448.5_gpp_gppl1_pr'
 'AUS_mod400.5_gpp_gppl1_cld'
 'CEAS_mod216.5_gppl1_pr_cld_vp'
-'BOAS_mod232.5_gppm1_pr_ts_vp')
+'BOAS_mod232.5_gppm1_pr_ts_vp'
+'EQAS_mod64.5_pr' 
+'EUME_mod80.5_pr_cld' )
 
 cp ${OUTDIR}/$MERGED_MOD/fire.200*.nc merged_models/${MERGED_TP}/tmp.nc
 for mod in "${MODELS[@]}"; do
@@ -31,7 +35,7 @@ for mod in "${MODELS[@]}"; do
 	cdo mergegrid merged_models/${MERGED_TP}/tmp.nc ${OUTDIR}/$mod/fire.200*.nc merged_models/${MERGED_TP}/tmp2.nc
 	mv merged_models/${MERGED_TP}/tmp2.nc merged_models/${MERGED_TP}/tmp.nc
 done
-mv merged_models/${MERGED_TP}/tmp.nc merged_models/${MERGED_TP}/fire.nc
+mv merged_models/${MERGED_TP}/tmp.nc merged_models/${MERGED_TP}/fire.2002-1-1-2015-12-31.nc
 
 
 

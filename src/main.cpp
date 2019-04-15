@@ -32,6 +32,8 @@ bool train, eval;
 DenseNet fireNet;
 gVar fire;
 
+int r1, r2;
+
 inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 	cout << "\n****************************************************************\n\n";
 	cout << s << " will run for " << ns << " steps.\n";
@@ -42,7 +44,7 @@ inline int printRunHeader(string s, double gt0, double gtf, int ns, int ds){
 }
 
 
-void init_eval(MultiNcReader &R, string wts_file, string out_dir){
+void init_eval(MultiNcReader &R, string wts_file, string reg_file, string out_dir){
 
 	cout << "> Running in EVAL mode." << endl;
 	
@@ -52,6 +54,19 @@ void init_eval(MultiNcReader &R, string wts_file, string out_dir){
 		fireNet.activation_fcn = elu;
 		cout << " | DONE.\n";
 		fireNet.print();	
+	}
+	catch(string msg){
+		cout << "Failed to open " << msg << endl;
+		exit(-1);
+	}
+
+	try{
+		cout << "> Reading Regions file " << reg_file;
+		ifstream fin(reg_file.c_str());
+		string s;
+		fin >> s >> s >> r1;
+		fin >> s >> s >> r2;
+		cout << "\nRegions = " << r1 << " " << r2 << endl;
 	}
 	catch(string msg){
 		cout << "Failed to open " << msg << endl;
@@ -90,8 +105,9 @@ void write_eval(MultiNcReader &R, string vars_file){
 	for (int ilat=0; ilat<R.mglats.size(); ++ilat){
 	for (int ilon=0; ilon<R.mglons.size(); ++ilon){
 		
-		int r1 = 12;
-		int r2 = 12;
+		
+	//		int r1 = 8;
+	//		int r2 = 8;
 		
 		int region = R.getVar("region")(ilon, ilat, 0);
 		if (region != r1 && region != r2) continue;
@@ -139,8 +155,8 @@ void write_eval(MultiNcReader &R, string vars_file){
 
 ////			x.push_back(R.getVar("wsp")(ilon, ilat, 0));
 
-			for (int ilev=0; ilev<R.getVar("ftmap").nlevs-1; ++ilev)	// this excludes ftmap11 (croplands)
-				x.push_back(R.getVar("ftmap")(ilon, ilat, ilev));
+			for (int ilev=1; ilev<R.getVar("ftmap").nlevs; ++ilev)	
+				if (ilev !=11) x.push_back(R.getVar("ftmap")(ilon, ilat, ilev)); // exclude ftmap11 (croplands)
 
 
 //			for (int i=0; i< x.size(); ++i) cout << x[i] << " ";
@@ -223,12 +239,13 @@ int main(int argc, char ** argv){
 
 	R.init();
 
-	string out_dir, weights_file, vars_file;
+	string out_dir, weights_file, vars_file, regions_file;
 	if (eval) {
 		out_dir = argv[3];
 		weights_file = out_dir + "/" + argv[4];
 		vars_file = out_dir + "/" + argv[5];
-		init_eval(R, weights_file, out_dir);
+		regions_file = out_dir + "/" + argv[6];
+		init_eval(R, weights_file, regions_file, out_dir);
 	}
 
 

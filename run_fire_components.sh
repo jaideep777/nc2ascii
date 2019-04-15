@@ -1,15 +1,18 @@
 #!/bin/bash
 
 VARS=(  gpp   gppl1  pr  ts  cld  vp  pop  rdtot   ftmap11 )
-USEV=(    1       1   1   1    1   1    1      1         0 )
+USEV=(    1       1   0   1    0   0    0      0         0 )
 
 FOLDER=output_globe
-MODEL=SEAS
+MODEL=AUS
+
+R1=14
+R2=14
 
 ## Generate a unique code number for the model from the variables used.
 MODNUM="${USEV[@]}" 			# join USEV array serially (joins with spaces)
 MODNUM=$((2#${MODNUM// /}))		# remove spaces so MODNUM becomes a binary number, then convert to decimal
-MODEL=${MODEL}_mod$MODNUM.5		# Append decimal number to model name. Thus each model gets unique name
+MODEL=${MODEL}_mod$MODNUM.6		# Append decimal number to model name. Thus each model gets unique name
 echo MODEL CODE=$MODEL
 
 ##################################################################
@@ -44,6 +47,8 @@ mkdir -p $FOLDER/$MODEL
 
 echo -e $VARS_LIST > $FOLDER/$MODEL/nn_vars.txt		# Output the list of vars to file (to be used by nc2asc)
 
+echo -e "r1 = $R1 \nr2 = $R2" > $FOLDER/$MODEL/regions.py
+
 make 
 
 ##################################################################
@@ -60,8 +65,8 @@ cd tensorflow
 cd ..
 
 # Run trained NN on data
-# ## nc2asc eval syntax: ./nc2asc eval <params_file> <model_dir> <weights_file> <vars_file>
-./nc2asc eval params_newdata/params_ip_global_eval.r $FOLDER/$MODEL weights_ba.txt nn_vars.txt
+# ## nc2asc eval syntax: ./nc2asc eval <params_file> <model_dir> <weights_file> <vars_file> <regions file>
+./nc2asc eval params_newdata/params_ip_global_eval.r $FOLDER/$MODEL weights_ba.txt nn_vars.txt regions.py
 ###mv fire.2003-1-1-2015-12-31.nc $FOLDER/$MODEL
 
 # Plot results

@@ -16,13 +16,13 @@ wsp			ncep_reanalysis/wsp
 # trmm		precip_trmm/combined/reordered_dims
 pr			precip_gpcp2.3
 prl1		precip_gpcp2.3
-prl2		precip_gpcp2.3
+# prl2		precip_gpcp2.3
 prm1		precip_gpcp2.3
 prm1s		precip_gpcp2.3
 # ndr			ndr_daily
 gpp			GPP_modis
 gppl1		GPP_modis
-gppl2		GPP_modis
+# gppl2		GPP_modis
 gppm1		GPP_modis
 gppm1s		GPP_modis
 # ffev		fire_events_modis/india/fire_modis_0.5
@@ -34,7 +34,7 @@ gfed		Fire_BA_GFED4.1s/nc
 cld			MODISAL2_cloud_fraction/nc_merged
 # prev_cld	MODISAL2_cloud_fraction/nc_merged
 pop			World_population_density
-
+ftmap		MCD12C1_006
 
 > FORCING_VARIABLE_DATA
 # name | unit 	|	prefix   		|	start_yr |	end_yr | nyrs/file | nlevs |    T mode			| Interpolation
@@ -68,6 +68,7 @@ gppm1s 	 gC/m2/s	gpp					2000		2015		16			1		prev_year_S 	 bilinear
 # prev_pr	 mm/day		pr.trmm-perm		2000		2015		1			1		prev_yearly		 coarsegrain		
 # prev_cld -			MODAL2_M_CLD_FR		2001		2018		1			1		prev_yearly		 coarsegrain
 pop		 - 			GHS_POP_GPW4_0.25deg 1990		2016		27			1		linear			 coarsegrain
+ftmap 	 - 	MCD12C1.006_UMD_0.25deg.13levs 2001		2017		1			13		yearly			 coarsegrain
 
 # file name will be taken as "prefix.yyyy.nc" or "prefix.yyyy-yyyy.nc"
 # value types: ins (instantaneous), sum, avg (not used as of now)
@@ -78,7 +79,7 @@ pop		 - 			GHS_POP_GPW4_0.25deg 1990		2016		27			1		linear			 coarsegrain
 
 > STATIC_INPUT_FILES
 # var	|	nlevs | interp			| file 
-ftmap 		12 		coarsegrain		  forest_type/MODIS/ftmap_modis_global_0.25deg_12levs.nc
+# ftmap 		12 		coarsegrain		  forest_type/MODIS/ftmap_modis_global_0.25deg_12levs.nc
 # elev		1		bilinear		  util_data/elevation/elev.0.5-deg.nc
 dft			1		nearest		  	  forest_type/MODIS/dft_MODIS_global_12lev_agri-bar_lt0.5_1deg.nc
 # pop			1		coarsegrain		  World_population_density/GHS_POP_GPW42000_GLOBE_R2015A_54009_1k_v1_0/GHS_pop_GPW42000_reprojected_Globe.nc    
@@ -99,7 +100,7 @@ msk			bilinear 	 	  util_data/masks/surta_global_0.5_sl.nc
 
 > TIME
 timestep 	monthly
-start_date	2001-1-1
+start_date	2002-1-1
 start_time	0:0:0
 end_date	2015-12-31
 end_time	23:0:0	
